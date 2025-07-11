@@ -1,0 +1,97 @@
+
+    <h5 class="page-title">Quiz Results</h5>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-sm-flex align-items-center">
+                <div class="quiz-img me-3 mb-2 mb-sm-0">
+                    <img src="assets/img/students/quiz.jpg" alt="">
+                </div>
+                <div>
+                    <h5 class="mb-2"><a href="javascript:void(0);">Information About UI/UX Design Degree</a></h5>
+                    <div class="question-info d-flex align-items-center">
+                        <p class="d-flex align-items-center fs-14 me-2 pe-2 border-end mb-0"><i class="isax isax-message-question5 text-primary-soft me-2"></i>25 Questions</p>
+                        <p class="d-flex align-items-center fs-14 mb-0"><i class="isax isax-clock5 text-secondary-soft me-2"></i>30 Minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-secondary-transparent border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1 fw-normal text-gray-5">Total Particpants</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">30</span>
+                        </div>
+                        <div class="icon-box bg-soft-secondary">
+                            <img src="assets/img/icon/user-tick.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-info-transparent border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1 fw-normal text-gray-5">Scores</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">03</span>
+                        </div>
+                        <div class="icon-box  bg-soft-info">
+                            <img src="assets/img/icon/document.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-purple-transparent border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1 fw-normal text-gray-5">Average Time</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">00:00:55</span>
+                        </div>
+                        <div class="icon-box  bg-soft-purple">
+                            <img src="assets/img/icon/clock.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive custom-table">
+        <table matSort (matSortChange)="sortData($event)" class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Score</th>
+                    <th>Attemplts</th>
+                    <th>Finish Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (data of tableData;track data){
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a [routerLink]="routes.studentsDetails" class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
+                                <img src="assets/img/user/{{data.img}}" alt="">
+                            </a>
+                            <a [routerLink]="routes.studentsDetails" class="fs-14">{{data.studentName}}</a>
+                        </div>
+                    </td>
+                    <td>{{data.score}}</td>
+                    <td>{{data.attempts}}</td>
+                    <td>{{data.finishTime}}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /pagination -->
+    <app-custom-pagination/>
+    <!-- /pagination -->

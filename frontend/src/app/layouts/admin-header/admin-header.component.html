@@ -1,0 +1,332 @@
+
+
+<!-- Header Topbar-->
+<div class="header-topbar text-center">
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-6">
+              <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
+                  <p class="d-flex align-items-center fw-medium fs-14 mb-2 me-3"><i class="isax isax-location5 me-2"></i>1442 Crosswind Drive Madisonville</p>
+                  <p class="d-flex align-items-center fw-medium fs-14 mb-2"><i class="isax isax-call-calling5 me-2"></i>+1 45887 77874</p>
+              </div>
+          </div>
+          <div class="col-lg-6">
+              <div class="d-flex align-items-center justify-content-center justify-content-lg-end">
+                  <div class="dropdown flag-dropdown mb-2 me-3">
+                      <a href="javascript:void(0);" class="dropdown-toggle d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                          <img src="assets/img/flags/us-flag.svg" class="me-2" alt="flag">ENG
+                      </a>
+                      <ul class="dropdown-menu p-2 mt-2">
+                          <li>
+                              <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                                  <img src="assets/img/flags/us-flag.svg" class="me-2" alt="flag">ENG
+                              </a>
+                          </li>
+                          <li>
+                              <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                                  <img src="assets/img/flags/arab-flag.svg" class="me-2" alt="flag">ARA
+                              </a>
+                          </li>
+                          <li>
+                              <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                                  <img src="assets/img/flags/france-flag.svg" class="me-2" alt="flag">FRE
+                              </a>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="dropdown mb-2 me-3">
+                      <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          USD
+                      </a>
+                      <ul class="dropdown-menu p-2 mt-2">
+                          <li><a class="dropdown-item rounded" href="javascript:void(0);">USD</a></li>
+                          <li><a class="dropdown-item rounded" href="javascript:void(0);">YEN</a></li>
+                          <li><a class="dropdown-item rounded" href="javascript:void(0);">EURO</a></li>
+                      </ul>
+                  </div>
+                  <ul class="social-icon d-flex align-items-center mb-2">
+                      <li class="me-2">
+                          <a href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
+                      </li>
+                      <li class="me-2">
+                          <a href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>
+                      </li>
+                      <li class="me-2">
+                          <a href="javascript:void(0);"><i class="fa-brands fa-x-twitter"></i></a>
+                      </li>
+                      <li class="me-2">
+                          <a href="javascript:void(0);"><i class="fa-brands fa-youtube"></i></a>
+                      </li>
+                      <li>
+                          <a href="javascript:void(0);"><i class="fa-brands fa-linkedin"></i></a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+  </div>
+  <!-- /Header Topbar-->
+
+<!-- Header -->
+<header
+  class="header-two"
+  > 
+  <div class="container">
+    <div class="header-nav">
+      <div class="navbar-header">
+        <a id="mobile_btn" href="javascript:void(0);"  (click)="toggleSidebar()">
+          <span class="bar-icon">
+            <i class="isax isax-menu"></i>
+          </span>
+        </a>
+        <div class="navbar-logo">
+          <a class="logo-white header-logo" [routerLink]="routes.home">
+            <img src="assets/img/logo.svg" class="logo" alt="Logo">
+          </a>
+          <a class="logo-dark header-logo" [routerLink]="routes.home">
+            <img src="assets/img/logo-white.svg" class="logo" alt="Logo">
+          </a>
+        </div>
+      </div>
+      <div class="main-menu-wrapper" [ngClass]="{ 'active': isHovered }">								
+        <div class="menu-header">
+          <a [routerLink]="routes.home" class="menu-logo">
+            <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
+          </a>
+          <a id="menu_close" class="menu-close" href="javascript:void(0);" (click)="hideSidebar()">
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
+        <ul class="main-nav" [ngClass]="{ 'active': isHovered }">
+          <ng-container *ngFor="let mainMenus of sidebar, let i = index">
+            @if(mainMenus.tittle === 'Home'){
+            <li class="has-submenu megamenu"  [class.active]="base===mainMenus.base || base===mainMenus.base2 || base===mainMenus.base3 || base===mainMenus.base4 || base===mainMenus.base5 || base===mainMenus.base6" (mouseenter)="isHovered = true"  (mouseleave)="isHovered = false">
+              <a href="javascript:void(0);" [ngClass]="{'submenu':isDropdownOpen}" (click)="openSubMenu()">{{mainMenus.tittle}} <i class="isax isax-add"></i></a>
+              <ul class="submenu mega-submenu" [ngStyle]="{ display: isDropdownOpen ? 'block' : '' }">
+                <li>
+                  <div class="megamenu-wrapper">
+                    <div class="row">
+                      @for (menu of mainMenus.menu;track menu){
+                        <div class="col-lg-2">
+                          <div class="single-demo" [class.active]="base===menu.base">
+                            <div class="demo-img">
+                              <a [routerLink]="menu.route" class="inner-demo-img"><img src="assets/img/home/{{menu.img}}" class="img-fluid " alt="img"></a>
+                            </div>
+                            <div class="demo-info">
+                              <a [routerLink]="menu.route" class="inner-demo-img">{{menu.menuValue}}</a>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          }
+          @if (mainMenus.separateRoute === true) {
+          <li class="has-submenu" [class.active]="base ===mainMenus.base">
+            <a [routerLink]="mainMenus.route">{{ mainMenus.tittle }} <i class="isax isax-add"></i></a>
+          </li>
+            }
+            @if (mainMenus.separateRoute === false && mainMenus.tittle!=='Home') {
+              <li class="has-submenu" [class.active]="base === mainMenus.base || base=== mainMenus.base2">
+                <a href="javascript:void(0);" [ngClass]="{'submenu':openDropdownIndex === i}" (click)="toggleSubMenu(i)">{{ mainMenus.tittle }} <i class="isax isax-add"></i></a>
+                <ul class="submenu" [ngStyle]="{ display: openDropdownIndex === i ? 'block' : '' }">
+                  @for (menu of mainMenus.menu; track menu) {
+                      @if (menu.hasSubRoute === false) {
+                      <li [class.active]="page===menu.page">
+                        <a [routerLink]="menu.route">{{ menu.menuValue }}</a>
+                      </li>
+                      }
+                      @if (menu.hasSubRoute === true) {
+                        <li class="has-submenu" [class.active]="page===menu.base || page===menu.base1 || page===menu.base2 || page===menu.base3 || page===menu.base4
+                        || page===menu.base5 || page===menu.base6 || page===menu.base7 || page===menu.base8 || page===menu.base9 || page===menu.base10 || page===menu.base11 || page===menu.base12 || page===menu.base13 || page===menu.base14 || page===menu.base15">
+                          <a href="javascript:void(0);" [ngClass]="{'submenu':isDropdownOpen1 === i}" (click)="openSubMenu1(i)">{{ menu.menuValue }}</a>
+                          <ul class="submenu" [ngStyle]="{ display: isDropdownOpen1 === i ? 'block' : '' }">
+                            @for (subMenu of menu.subMenus; track subMenu) {
+                              @if(subMenu.hasSubRoute===false){
+                                <li [class.active]="page===subMenu.page"><a [routerLink]="subMenu.route">{{ subMenu.menuValue }}</a></li>
+                              }
+                              @if(subMenu.hasSubRoute===true){
+                                <li class="has-submenu" [class.active]="page===subMenu.page || page===subMenu.page1 || page===subMenu.page2">
+                                  <a href="javascript:void(0);">{{ subMenu.menuValue }}</a>
+                                  <ul class="submenu">
+                                    @for (subMenu2 of subMenu.subMenus; track subMenu2){
+                                    <li [class.active]="page===subMenu2.page"><a [routerLink]="subMenu2.route" >{{subMenu2.menuValue}}</a></li>
+                                    }
+                                  </ul>
+                                </li>
+                              }
+                            }
+                          </ul>
+                        </li>
+                      }
+                      }
+                </ul>
+                </li>
+              }
+            </ng-container>
+        </ul>
+        <div class="menu-dropdown">
+          <div class="cart-item">
+            <h6>Cart & Wishlist</h6>                                
+            <div class="icon-btn">
+              <a [routerLink]="routes.cart" class="position-relative">
+                <i class="isax isax-shopping-cart5"></i>
+                <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
+              </a>
+            </div>
+          </div>
+          <div class="dropdown flag-dropdown mb-2">
+            <a href="javascript:void(0);" class="dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="assets/img/flags/us-flag.svg" class="me-2" alt="flag">ENG
+            </a>
+            <ul class="dropdown-menu p-2 mt-2">
+              <li>
+                <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                  <img src="assets/img/flags/us-flag.svg" class="me-2" alt="flag">ENG
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                  <img src="assets/img/flags/arab-flag.svg" class="me-2" alt="flag">ARA
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item rounded d-flex align-items-center" href="javascript:void(0);">
+                  <img src="assets/img/flags/france-flag.svg" class="me-2" alt="flag">FRE
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown mb-2">
+            <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              USD
+            </a>
+            <ul class="dropdown-menu p-2 mt-2">
+              <li><a class="dropdown-item rounded" href="javascript:void(0);">USD</a></li>
+              <li><a class="dropdown-item rounded" href="javascript:void(0);">YEN</a></li>
+              <li><a class="dropdown-item rounded" href="javascript:void(0);">EURO</a></li>
+            </ul>
+          </div>
+          <div class="dropdown mb-2">
+            <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Light
+            </a>
+            <ul class="dropdown-menu p-2 mt-2">
+              <li><a class="dropdown-item rounded" href="javascript:void(0);">Light</a></li>
+              <li><a class="dropdown-item rounded" href="javascript:void(0);">Dark</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="menu-login">
+          <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2"><i class="isax isax-user me-2"></i>Sign In</a>
+          <a [routerLink]="routes.register" class="btn btn-secondary w-100"><i class="isax isax-user-edit me-2"></i>Register</a>
+        </div>
+      </div>
+      <div class="header-btn d-flex align-items-center">
+        <div class="icon-btn me-2">
+          <a href="javascript:void(0);" id="dark-mode-toggle" class="theme-toggle" [ngClass]="{'activate' : themeColor==='light-mode'}" (click)="sidebarService.changeThemeColor('dark-mode')" >
+            <i class="isax isax-sun-15"></i>
+          </a>
+          <a href="javascript:void(0);" id="light-mode-toggle" class="theme-toggle" [ngClass]="{'activate' : themeColor==='dark-mode'}" (click)="sidebarService.changeThemeColor('light-mode')" >
+            <i class="isax isax-moon"></i>
+          </a>
+        </div>
+        <div class="icon-btn me-3">
+          <a [routerLink]="routes.cart" class="position-relative">
+            <i class="isax isax-shopping-cart5"></i>
+            <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
+          </a>
+        </div>
+        <div *ngIf="base==='instructor'" class="dropdown profile-dropdown">
+                          <a href="javascript:void(0);" class="d-flex align-items-center" data-bs-toggle="dropdown">
+                              <span class="avatar">
+              <img src="assets/img/user/user-01.jpg" alt="Img" class="img-fluid rounded-circle">
+            </span>
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-end">
+            <div class="profile-header d-flex align-items-center">
+              <div class="avatar">
+                <img src="assets/img/user/user-01.jpg" alt="Img" class="img-fluid rounded-circle">
+              </div>
+              <div>
+                <h6>Eugene Andre</h6>
+                <p>instructerdemo&#64;example.com</p>
+              </div>
+            </div>
+            <ul class="profile-body">
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.instructorProfile"><i class="isax isax-security-user me-2"></i>My Profile</a>
+              </li>
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.instructorCourse"><i class="isax isax-teacher me-2"></i>Courses</a>
+              </li>
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium2" [routerLink]="routes.instructorEarning"><i class="isax isax-dollar-circle me-2"></i>Earnings</a>
+              </li>
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.instructor_payouts"><i class="isax isax-coin me-2"></i>Payouts</a>
+              </li>
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.instructorMessage"><i class="isax isax-messages-3 me-2"></i>Messages<span class="message-count">2</span></a>
+              </li>
+              <li>
+                <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.instructorSettings"><i class="isax isax-setting-2 me-2"></i>Settings</a>
+              </li>										
+            </ul>
+            <div class="profile-footer">
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.login"><i class="isax isax-arrow-2 me-2"></i>Log in as Student</a>
+              <a [routerLink]="routes.home" class="btn btn-secondary d-inline-flex align-items-center justify-content-center w-100"><i class="isax isax-logout me-2"></i>Logout</a>
+            </div>
+                          </div>
+        </div>
+        <div *ngIf="base==='student'" class="dropdown profile-dropdown">
+          <a href="javascript:void(0);" class="d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="true">
+              <span class="avatar">
+              <img src="assets/img/user/user-02.jpg" alt="Img" class="img-fluid rounded-circle">
+              </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(0px, 37.7778px, 0px);" data-popper-placement="bottom-end">
+              <div class="profile-header d-flex align-items-center">
+              <div class="avatar">
+              <img src="assets/img/user/user-02.jpg" alt="Img" class="img-fluid rounded-circle">
+              </div>
+              <div>
+              <h6>Ronald Richard</h6>
+              <p>studentdemo&#64;example.com</p>
+              </div>
+              </div>
+              <ul class="profile-body">
+              <li>
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.studentProfile"><i class="isax isax-security-user me-2"></i>My Profile</a>
+              </li>
+              <li>
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.studentQuiz"><i class="isax isax-award me-2"></i>Quiz Attempts</a>
+              </li>
+              <li>
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium2" [routerLink]="routes.studentOrderHistory"><i class="isax isax-shopping-cart me-2"></i>Order History</a>
+              </li>
+              <li>
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.studentsMessage"><i class="isax isax-messages-3 me-2"></i>Messages<span class="message-count">2</span></a>
+              </li>
+              <li>
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.studentSettings"><i class="isax isax-setting-2 me-2"></i>Settings</a>
+              </li>										
+              </ul>
+              <div class="profile-footer">
+              <a class="dropdown-item d-inline-flex align-items-center rounded fw-medium" [routerLink]="routes.login"><i class="isax isax-arrow-2 me-2"></i>Log in as Instructor</a>
+              <a [routerLink]="routes.home" class="btn btn-secondary d-inline-flex align-items-center justify-content-center w-100"><i class="isax isax-logout me-2"></i>Logout</a>
+              </div>
+          </div>
+      </div>
+      </div>
+      </div>
+    </div>
+
+    </header>
+    <!-- /Header -->
+    <div class="sidebar-overlay" [ngClass]="{'opened':isOpened}" (click)="hideSidebar()"></div>

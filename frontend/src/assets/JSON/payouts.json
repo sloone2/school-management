@@ -1,0 +1,77 @@
+{
+    "data": [
+        
+            {
+                "id": "#1010",
+                "date": "22 Aug 2025",
+                "amount": "$160",
+                "paymentMethod": "Paypal",
+                "status": "Paid"
+            },
+            {
+                "id": "#1009",
+                "date": "10 Aug 2025",
+                "amount": "$180",
+                "paymentMethod": "Bank Transfer",
+                "status": "Pending"
+            },
+            {
+                "id": "#1008",
+                "date": "26 Jul 2025",
+                "amount": "$200",
+                "paymentMethod": "Stripe",
+                "status": "Paid"
+            },
+            {
+                "id": "#1007",
+                "date": "12 Jul 2025",
+                "amount": "$220",
+                "paymentMethod": "Paypal",
+                "status": "Paid"
+            },
+            {
+                "id": "#1006",
+                "date": "02 Jul 2025",
+                "amount": "$170",
+                "paymentMethod": "Stripe",
+                "status": "Paid"
+            },
+            {
+                "id": "#1005",
+                "date": "25 Jun 2025",
+                "amount": "$150",
+                "paymentMethod": "Bank Transfer",
+                "status": "Paid"
+            },
+            {
+                "id": "#1004",
+                "date": "17 Jun 2025",
+                "amount": "$130",
+                "paymentMethod": "Paypal",
+                "status": "Paid"
+            },
+            {
+                "id": "#1003",
+                "date": "04 Jun 2025",
+                "amount": "$190",
+                "paymentMethod": "Bank Transfer",
+                "status": "Paid"
+            },
+            {
+                "id": "#1002",
+                "date": "20 May 2025",
+                "amount": "$140",
+                "paymentMethod": "Paypal",
+                "status": "Cancelled"
+            },
+            {
+                "id": "#1001",
+                "date": "15 May 2025",
+                "amount": "$110",
+                "paymentMethod": "Stripe",
+                "status": "Paid"
+            }
+        
+    ],
+    "totalData": 10
+}

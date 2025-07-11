@@ -1,0 +1,63 @@
+<div class="settings-sidebar mb-lg-0 theiaStickySidebar">
+    <div>
+        <h6 class="mb-3">Main Menu</h6>
+        <ul class="mb-3 pb-1">
+            <li>
+                <a [routerLink]="routes.instructor_dashboard" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-grid-35 me-2"></i>Dashboard</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorProfile" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="fa-solid fa-user me-2"></i>My Profile</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorCourse" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-teacher5 me-2"></i>Courses</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorAnnouncements" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-volume-high5 me-2"></i>Announcements</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorAssignment" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-clipboard-text5 me-2"></i>Assignments</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.studentsGrid" [ngClass]="{'active':page==='students-list' || page==='students-grid'}" class="d-inline-flex align-items-center" ><i class="isax isax-profile-2user5 me-2"></i>Students</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorQuiz" [ngClass]="{'active':page==='instructor-quiz' || page==='instructor-quiz-questions'}" class="d-inline-flex align-items-center"><i class="isax isax-award5 me-2"></i>Quiz</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorQuizResult" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-medal-star5 me-2"></i>Quiz Results</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorCertificate" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-note-215 me-2"></i>Certificates</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorEarning" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-wallet-add5 me-2"></i>Earnings</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructor_payouts" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-coin-15 me-2"></i>Payout</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorStatements" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-shopping-cart5 me-2"></i>Statements</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorMessage" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-messages-35 me-2"></i>Messages</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructor_tickets" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-ticket5 me-2"></i>Support Tickets</a>
+            </li>
+        </ul>
+        <hr>
+        <h6 class="mb-3">Account Settings</h6>
+        <ul>
+            <li>
+                <a [routerLink]="routes.instructorSettings" 
+                [ngClass]="{'active':last==='instructor-settings' || last==='instructor-change-password' || last==='instructor-plans' 
+                || last === 'instructor-social-profiles' || last === 'instructor-linked-accounts' || last === 'instructor-setting-notifications' || last === 'instructor-integrations' || last === 'instructor-setting-withdraw'
+                }" 
+                class="d-inline-flex align-items-center"><i class="isax isax-setting-25 me-2"></i>Settings</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.login" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-logout5 me-2"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</div>

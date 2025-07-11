@@ -1,0 +1,168 @@
+
+    <div class="payouts">
+    <div class="alert alert-warning alert-dismissible d-flex fade show mb-4">
+        <i class="isax isax-information4 flex-shrink-0 me-2"></i>Your selected payout method was confirmed on Next Payout on 15 Jan, 2025 for "payout&#64;example.com"
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="isax isax-close-circle5"></i></button>
+    </div>
+    <div class="row mb-4">
+        <div class="col-xl-5">
+        <div class="earning-this-month border">
+            <img src="./assets/img/shapes/withdraw-bg1.svg" class="earning-bg1" alt="img">
+            <img src="./assets/img/shapes/withdraw-bg2.svg" class="earning-bg2" alt="img">
+            <div class="flex-shrink-0 earn-img">
+                <img class="img-fluid" src="./assets/img/icons/icon-2.svg" alt="img">
+            </div>
+        <div class="ps-3">
+            <h6 class="mb-2">Earning this month</h6>
+            <h5>$8,420</h5>
+            <p>Update your payout in settings</p>
+        </div>
+        <a href="javascript:void(0);" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#withdraw-req">Withdraw</a>
+        </div>
+        </div>
+        <div class="col-xl-7">
+            <h6 class="mb-3">Select Payment Gateway for Payout</h6> 
+            <div class="payment-method">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <div>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" checked="">
+                            <label class="btn bg-white btn-check-label w-100 d-flex justify-content-between align-items-center" for="btnradio1">
+                                <span class="d-flex align-items-center"><span class="check-outer me-2"><i></i></span><img src="assets/img/icons/paypal.svg" alt="img"></span>
+                                
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2">
+                            <label class="btn btn-check-label bg-white w-100 d-flex justify-content-between align-items-center" for="btnradio2">
+                                <span class="d-flex align-items-center fs-16 fw-medium"><span class="check-outer me-2"><i></i></span>Bank Transfer</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>                           
+        </div>
+    </div>
+    <h5 class="page-title">Payouts</h5>
+    <div class="table-top">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center">
+                <div class="mb-3">
+                    <div class="dropdown me-3">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                            Payment Method
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Paypal</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Bank Transfer</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Stripe</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="dropdown me-3">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                        Status
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Paid</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Pending</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Cancel</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-icon mb-3">
+                <span class="input-icon-addon">
+                    <i class="isax isax-search-normal-14"></i>
+                </span>
+                <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
+            </div>
+        </div>
+    </div>
+   </div>
+   <div class="table-responsive custom-table">
+    <table matSort (matSortChange)="sortData($event)" class="table">
+        <thead class="thead-light">
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (data of tableData;track data){
+            <tr>
+                <td><a href="javascript:void(0);" class="text-primary">{{data.id}}</a></td>
+                <td>{{data.date}}</td>
+                <td>{{data.amount}}</td>
+                <td>{{data.paymentMethod}}</td>
+                <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="data.status==='Paid'?'bg-success':data.status==='Pending'?'bg-info':'bg-danger'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.status}}</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+            <!-- /pagination -->
+    <app-custom-pagination/>
+    <!-- /pagination -->
+</div>
+
+<div class="modal fade" id="withdraw-req">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="fw-bold">Withdrawal Request</h5>
+                <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="isax isax-close-circle5"></i>
+                </button>
+            </div>
+            <form>
+                <div class="modal-body pb-0">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="mb-2">Withdrawal Balance</p>
+                                    <h6 class="fs-16">$5340</h6>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-2">Selected</p>
+                                    <h6 class="fs-16">PayPal</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount<span class="text-danger ms-1">*</span></label>
+                        <input type="text" class="form-control" value="$ ">
+                        <p class="form-info"><i class="isax isax-info-circle"></i>Minimum withdraw amount is $50</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

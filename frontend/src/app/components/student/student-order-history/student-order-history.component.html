@@ -1,0 +1,60 @@
+
+    <div class="page-title d-flex align-items-center justify-content-between">
+        <h5>Order History</h5>
+    </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <div class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                            Status
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-3">
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Completed</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Pending</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-icon mb-3">
+                    <span class="input-icon-addon">
+                        <i class="isax isax-search-normal-14"></i>
+                    </span>
+                    <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
+                </div>
+            </div>
+        </div>
+            <div class="table-responsive custom-table">
+                <table matSort (matSortChange)="sortData($event)" class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (data of tableData;track data){
+                        <tr>
+                            <td><a href="javascript:void(0);" class="text-primary" data-bs-toggle="modal" data-bs-target="#view_invoice">{{data.orderId}}</a></td>
+                            <td>{{data.date}}</td>
+                            <td>{{data.amount}}</td>
+                            <td><span class="badge d-inline-flex align-items-center me-1" [ngClass]="data.status==='Completed'?'bg-success':'bg-info'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.status}}</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" data-bs-toggle="modal" data-bs-target="#view_invoice"><i class="isax isax-eye"></i></a>
+                                    <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon"><i class="isax isax-import"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>

@@ -1,0 +1,214 @@
+
+    <div class="card mb-0">
+        <div class="card-body">
+            <form>
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
+                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                        <div>
+                            <h6 class="mb-1">Home <span class="badge bg-soft-success ms-1 fs-12 fw-normal">Default</span></h6>
+                            <p>16 Lake Floyd Circle, Newark, DE 19714</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a href="javascript:void(0);" class="btn btn-light btn-sm border me-2" data-bs-toggle="modal" data-bs-target="#edit_billing"><i class="isax isax-edit-2 me-2"></i>Edit</a>
+                        <a href="javascript:void(0);" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash me-1"></i>Delete</a>
+                    </div>
+                </div>
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
+                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                        <div>
+                            <h6 class="mb-1">Work</h6>
+                            <p>33 Hart Country Lane, West Point, GA 31833</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a href="javascript:void(0);" class="btn btn-light btn-sm border me-2" data-bs-toggle="modal" data-bs-target="#edit_billing"><i class="isax isax-edit-2 me-2"></i>Edit</a>
+                        <a href="javascript:void(0);" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash me-1"></i>Delete</a>
+                    </div>
+                </div>
+            </form>	
+            <div class="mt-4">
+                <a href="javascript:void(0);" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add_billing">Add New Address</a>
+            </div>
+        </div>
+    </div>	
+
+    			<!-- Add Billing -->
+			<div class="modal fade" id="add_billing">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>Add Billing Address</h5>
+							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+								<i class="isax isax-close-circle5"></i>
+							</button>
+						</div>
+						<form>
+							<div class="modal-body pb-0">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="mb-3">
+											<label class="form-label">Title <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="mb-3">
+											<label class="form-label">Address <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">Country <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="Select">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">United states of America</mat-option>
+												<mat-option value="1">Canada</mat-option>
+												<mat-option value="1">Germany</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">State <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="Select">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">California</mat-option>
+												<mat-option value="1">New York</mat-option>
+												<mat-option value="1">Texas</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">City <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="Select">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">Los Angeles</mat-option>
+												<mat-option value="1">San Diego</mat-option>
+												<mat-option value="1">Fresno</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">Postal Code <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
+								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Add Address</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- /Add Billing -->
+
+			<!-- Edit Billing -->
+			<div class="modal fade" id="edit_billing">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>Edit Billing Address</h5>
+							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+								<i class="isax isax-close-circle5"></i>
+							</button>
+						</div>
+						<form>
+							<div class="modal-body pb-0">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="mb-3">
+											<label class="form-label">Title <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control" value="Home">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="mb-3">
+											<label class="form-label">Address <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control" value="16 Lake Floyd Circle">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">Country <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="United states of America">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">United states of America</mat-option>
+												<mat-option value="1">Canada</mat-option>
+												<mat-option value="1">Germany</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">State <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="California">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">California</mat-option>
+												<mat-option value="1">New York</mat-option>
+												<mat-option value="1">Texas</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">City <span class="text-danger"> *</span></label>
+											<mat-select class="custom-mat-select select" placeholder="Los Angeles">
+												<mat-option value="1">Select</mat-option>
+												<mat-option value="1">Los Angeles</mat-option>
+												<mat-option value="1">San Diego</mat-option>
+												<mat-option value="1">Fresno</mat-option>
+											</mat-select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="mb-3">
+											<label class="form-label">Postal Code <span class="text-danger"> *</span></label>
+											<input type="text" class="form-control" value="90001">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-check form-check-md my-4">
+											<input class="form-check-input" type="checkbox" value="" id="defaultaccount">
+											<label class="form-check-label" for="defaultaccount">Yes, I'd like to delete my account</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
+								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Save Changes</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- /Edit Billing -->
+
+			<!-- Delete Modal -->
+			<div class="modal fade" id="delete_modal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body text-center custom-modal-body">
+							<span class="avatar avatar-lg bg-secondary-transparent rounded-circle mb-2">
+								<i class="isax isax-trash fs-24 text-danger"></i>
+							</span>
+							<div>
+								<h4 class="mb-2">Delete Address</h4>
+								<p class="mb-3">Are you sure you want to delete address?</p>
+								<div class="d-flex align-items-center justify-content-center">
+									<a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Cancel</a>
+									<a href="javascript:void(0);" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Yes, Remove All</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /Delete Modal -->

@@ -1,0 +1,117 @@
+{
+  "data": [
+       {
+          "img":"course-01.jpg",
+          "courseName": "Information About UI/UX Design Degree",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "600",
+          "price": "$160",
+          "ratings": "4.5 (300)",
+          "status": "Published"
+      },
+       {
+          "img":"course-02.jpg",
+          "courseName": "WordPress for Beginners - Master WordPress Quickly",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "500",
+          "price": "$180",
+          "ratings": "4.2 (430)",
+          "status": "Pending"
+      },
+      {
+          "img":"course-03.jpg",
+          "courseName": "Sketch from A to Z (2024): Become an App Designer",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "300",
+          "price": "$200",
+          "ratings": "4.7 (140)",
+          "status": "Draft"
+      },
+     {
+          "img":"course-04.jpg",
+          "courseName": "Build Responsive Real-World Websites with Crash Course",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "400",
+          "price": "$220",
+          "ratings": "4.4 (260)",
+          "status": "Published"
+      },
+       {
+          "img":"course-05.jpg",
+          "courseName": "Learn JavaScript and Express to Become an Expert",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "700",
+          "price": "$170",
+          "ratings": "4.8 (180)",
+          "status": "Published"
+      },
+      {
+          "img":"course-06.jpg",
+          "courseName": "Introduction to Python Programming",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "450",
+          "price": "$150",
+          "ratings": "4.8 (180)",
+          "status": "Published"
+      },
+     {
+          "img":"course-07.jpg",
+          "courseName": "Build Responsive Websites with HTML5 and CSS3",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "620",
+          "price": "$130",
+          "ratings": "4.9 (510)",
+          "status": "Published"
+      },
+       {
+          "img":"course-08.jpg",
+          "courseName": "Information About Photoshop Design Degree",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "550",
+          "price": "$190",
+          "ratings": "4.6 (400)",
+          "status": "Published"
+      },
+     {
+          "img":"course-09.jpg",
+          "courseName": "C# Developers Double Your Coding with Visual Studio",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "240",
+          "price": "$140",
+          "ratings": "4.1 (180)",
+          "status": "Published"
+      },
+       {
+          "img":"course-10.jpg",
+          "courseName": "Complete HTML, CSS, and JavaScript Course",
+          "lessons": "11 Lessons",
+          "quizzes": "2 Quizzes",
+          "duration": "03:15:00 Hours",
+          "students": "380",
+          "price": "$110",
+          "ratings": "4.3 (200)",
+          "status": "Published"
+      }
+ 
+  
+  ],
+  "totalData": 10
+}

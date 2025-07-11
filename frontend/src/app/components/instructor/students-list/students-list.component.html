@@ -1,0 +1,66 @@
+
+    <div class="page-title d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold">Students</h5>
+        <div class="d-flex align-items-center list-icons">
+            <a [routerLink]="routes.studentsList" class="active me-2"><i class="isax isax-task"></i></a>
+            <a [routerLink]="routes.studentsGrid"><i class="isax isax-element-3"></i></a>
+        </div>
+    </div>
+    <div class="row justify-content-end">
+        <div class="col-md-4">
+            <div class="input-icon mb-3">
+                <span class="input-icon-addon">
+                    <i class="isax isax-search-normal-14"></i>
+                </span>
+                <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive custom-table">
+        <table matSort (matSortChange)="sortData($event)" class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Enroll Date</th>
+                    <th>Progress</th>
+                    <th>Courses</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (data of tableData;track data){
+                <tr>
+                    <td><a [routerLink]="routes.studentsDetails" class="text-primary">{{data.studentId}}</a></td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a [routerLink]="routes.studentsDetails" class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
+                                <img src="assets/img/user/{{data.img}}" alt="">
+                            </a>
+                            <a [routerLink]="routes.studentsDetails"><p class="fs-14">{{data.studentName}}</p></a>
+                        </div>
+                    </td>
+                    <td>{{data.enrollDate}}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="progress progress-xs flex-shrink-0" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 4px;width: 110px">
+                                <div class="progress-bar bg-success" [style.width]="data.progress"></div>
+                            </div>
+                            <span class="ms-2">{{data.progress}}</span>
+                        </div>
+                    </td>
+                    <td>{{data.courses}}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a [routerLink]="routes.studentsDetails" class="d-inline-flex fs-14 me-1 action-icon"><i class="isax isax-eye"></i></a>
+                            <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon"><i class="isax isax-messages-3"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /pagination -->
+    <app-custom-pagination/>
+    <!-- /pagination -->

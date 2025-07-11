@@ -1,0 +1,19 @@
+import { Component} from '@angular/core';
+import { pricingPlan } from 'src/app/models/model';
+import { DataService } from 'src/app/shared/service/data/data.service';
+import { routes } from 'src/app/shared/service/routes/routes';
+
+@Component({
+    selector: 'app-pricing-plan',
+    templateUrl: './pricing-plan.component.html',
+    styleUrls: ['./pricing-plan.component.scss'],
+    standalone: false
+})
+export class PricingPlanComponent  {
+  public pricingPlan : pricingPlan[] = [];
+  public routes = routes;
+
+
+
+
+}

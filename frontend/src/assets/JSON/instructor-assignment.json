@@ -1,0 +1,35 @@
+{
+    "data": [
+            {
+                "assignmentName": "Building Your First Landing Page",
+                "course": "Sketch from A to Z (2024): Become an App Designer",
+                "totalMarks": "80",
+                "totalSubmit": "2",
+                "status": "Published"
+            },
+            {
+                "assignmentName": "Building a Basic Angular Application",
+                "course": "Learn Angular Fundamentals Beginners Guide",
+                "totalMarks": "60",
+                "totalSubmit": "4",
+                "status": "Draft"
+            },
+            {
+                "assignmentName": "Basic Arithmetic Operations",
+                "course": "Learn JavaScript and Express to Become an Expert",
+                "totalMarks": "30",
+                "totalSubmit": "3",
+                "status": "Published"
+            },
+             {
+                "assignmentName": "Basic Calculations",
+                "course": "Introduction to Programming - Python & Java",
+                "totalMarks": "50",
+                "totalSubmit": "5",
+                "status": "Published"
+            }
+        
+    ],
+    "totalData": 6
+  }
+  

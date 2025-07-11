@@ -1,0 +1,13 @@
+
+<div class="mb-3">
+    <h5>Settings</h5>
+</div>				
+    <ul class="settings-nav d-flex align-items-center flex-wrap border bg-light-900 rounded">
+        <li><a [routerLink]="routes.studentSettings" routerLinkActive="active">Edit Profile</a></li>
+        <li><a [routerLink]="routes.studentChangePassword" routerLinkActive="active">Security</a></li>
+        <li><a [routerLink]="routes.students_social_profile" routerLinkActive="active">Social Profiles</a></li>
+        <li><a [routerLink]="routes.studentLinkedAccount" routerLinkActive="active">Linked Accounts</a></li>
+        <li><a [routerLink]="routes.studentNotification" routerLinkActive="active">Notifications</a></li>
+        <li><a [routerLink]="routes.studentBillingAddress" routerLinkActive="active">Billing Address</a></li>
+    </ul>
+<router-outlet></router-outlet>

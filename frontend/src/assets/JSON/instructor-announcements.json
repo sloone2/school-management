@@ -1,0 +1,33 @@
+{
+    "data": [
+
+        {
+            "date": "22 Aug 2025, 05:40 PM",
+            "announcement": "Welcome to Introduction to Programming",
+            "course": "Introduction to Programming - Python & Java",
+            "status": "Published"
+        },
+        {
+            "date": "10 Aug 2025, 10:15 AM",
+            "announcement": "Essay Assignment Due Date Approaching",
+            "course": "Sketch from A to Z (2024): Become an App Designer",
+            "status": "Draft"
+        },
+        {
+            "date": "26 Jul 2025, 01:30 PM",
+            "announcement": "Final Exam Schedule and Preparation Tips",
+            "course": "Learn Angular Fundamentals Beginners Guide",
+            "status": "Published"
+        },
+        {
+            "date": "15 May 2025, 04:00 PM",
+            "announcement": "New Video Lectures Added",
+            "course": "Learn JavaScript and Express to Become an Expert",
+            "status": "Published"
+        }
+            
+        ]
+    ,
+    "totalData": 5
+  }
+  

@@ -1,29 +1,21 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsUUID } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @ApiProperty({
-    example: 'user@example.com',
     description: 'User email address',
+    example: 'user@school.com',
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: 'password123',
     description: 'User password',
+    example: 'password123',
     minLength: 6,
   })
   @IsString()
   @MinLength(6)
   password: string;
-
-  @ApiPropertyOptional({
-    example: 'uuid-of-student',
-    description: 'Student ID for parent login (when parent wants to access student account)',
-  })
-  @IsOptional()
-  @IsUUID()
-  loginAsStudent?: string;
 }
 

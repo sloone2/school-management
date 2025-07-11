@@ -3,27 +3,27 @@ import {
   IsString, 
   MinLength, 
   IsEnum, 
-  IsOptional, 
-  IsBoolean,
-  IsDateString,
-  ValidateIf 
+  IsOptional,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserType } from '../../users/entities/user.entity';
-import { StaffType } from '../../users/entities/staff.entity';
-import { ParentRelationship } from '../../users/entities/parent.entity';
+
+export enum PublicUserType {
+  STUDENT = 'student',
+  PARENT = 'parent',
+}
 
 export class RegisterDto {
   @ApiProperty({
-    example: 'user@example.com',
     description: 'User email address',
+    example: 'user@school.com',
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: 'password123',
     description: 'User password',
+    example: 'password123',
     minLength: 6,
   })
   @IsString()
@@ -31,110 +31,77 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty({
+    description: 'User first name',
     example: 'John',
-    description: 'First name',
   })
   @IsString()
   firstName: string;
 
   @ApiProperty({
+    description: 'User last name',
     example: 'Doe',
-    description: 'Last name',
   })
   @IsString()
   lastName: string;
 
   @ApiProperty({
-    enum: UserType,
-    example: UserType.STUDENT,
-    description: 'Type of user',
+    description: 'User type - only student or parent allowed for public registration',
+    enum: PublicUserType,
+    example: PublicUserType.STUDENT,
   })
-  @IsEnum(UserType)
-  userType: UserType;
+  @IsEnum(PublicUserType)
+  userType: PublicUserType;
 
   // Student-specific fields
   @ApiPropertyOptional({
+    description: 'Student ID (required for student registration)',
     example: 'STU001',
-    description: 'Student ID (required for students)',
   })
-  @ValidateIf(o => o.userType === UserType.STUDENT)
+  @ValidateIf(o => o.userType === PublicUserType.STUDENT)
   @IsString()
   studentId?: string;
 
   @ApiPropertyOptional({
-    example: '2010-01-01',
-    description: 'Date of birth (for students)',
+    description: 'Student grade (required for student registration)',
+    example: 'Grade 10',
   })
-  @IsOptional()
-  @IsDateString()
-  dateOfBirth?: string;
-
-  @ApiPropertyOptional({
-    example: 'Grade 5',
-    description: 'Current grade (for students)',
-  })
-  @IsOptional()
+  @ValidateIf(o => o.userType === PublicUserType.STUDENT)
   @IsString()
   grade?: string;
 
   @ApiPropertyOptional({
-    example: false,
-    description: 'Whether student can login directly without parent',
+    description: 'Date of birth (for student registration)',
+    example: '2005-01-15',
   })
-  @IsOptional()
-  @IsBoolean()
-  canLoginDirectly?: boolean;
-
-  // Staff-specific fields
-  @ApiPropertyOptional({
-    example: 'EMP001',
-    description: 'Employee ID (required for staff)',
-  })
-  @ValidateIf(o => o.userType === UserType.STAFF)
-  @IsString()
-  employeeId?: string;
-
-  @ApiPropertyOptional({
-    enum: StaffType,
-    example: StaffType.INSTRUCTOR,
-    description: 'Type of staff (required for staff)',
-  })
-  @ValidateIf(o => o.userType === UserType.STAFF)
-  @IsEnum(StaffType)
-  staffType?: StaffType;
-
-  @ApiPropertyOptional({
-    example: 'Mathematics',
-    description: 'Department (for staff)',
-  })
+  @ValidateIf(o => o.userType === PublicUserType.STUDENT)
   @IsOptional()
   @IsString()
-  department?: string;
-
-  @ApiPropertyOptional({
-    example: 'Senior Teacher',
-    description: 'Position (for staff)',
-  })
-  @IsOptional()
-  @IsString()
-  position?: string;
+  dateOfBirth?: string;
 
   // Parent-specific fields
   @ApiPropertyOptional({
+    description: 'Phone number (required for parent registration)',
     example: '+1234567890',
-    description: 'Phone number (for parents)',
   })
-  @IsOptional()
+  @ValidateIf(o => o.userType === PublicUserType.PARENT)
   @IsString()
   phone?: string;
 
   @ApiPropertyOptional({
-    enum: ParentRelationship,
-    example: ParentRelationship.FATHER,
-    description: 'Relationship to student (for parents)',
+    description: 'Relationship to student (required for parent registration)',
+    example: 'father',
   })
-  @ValidateIf(o => o.userType === UserType.PARENT)
-  @IsEnum(ParentRelationship)
-  relationship?: ParentRelationship;
+  @ValidateIf(o => o.userType === PublicUserType.PARENT)
+  @IsString()
+  relationship?: string;
+
+  @ApiPropertyOptional({
+    description: 'Emergency contact (for parent registration)',
+    example: '+1234567891',
+  })
+  @ValidateIf(o => o.userType === PublicUserType.PARENT)
+  @IsOptional()
+  @IsString()
+  emergencyContact?: string;
 }
 

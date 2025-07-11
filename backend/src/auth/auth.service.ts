@@ -9,7 +9,7 @@ import { Staff } from '../users/entities/staff.entity';
 import { Parent } from '../users/entities/parent.entity';
 import { ClaimsService } from '../claims/claims.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto, PublicUserType } from './dto/register.dto';
 
 export interface JwtPayload {
   sub: string;
@@ -31,7 +31,13 @@ export interface AuthResponse {
     role: UserRole;
     claims: string[];
     frontendRoutes: string[];
-    canManageStudents?: string[]; // For parents - list of student IDs they can manage
+    children?: Array<{
+      id: string;
+      firstName: string;
+      lastName: string;
+      studentId: string;
+      grade: string;
+    }>; // For parents - list of children they can manage
   };
 }
 
@@ -73,28 +79,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<AuthResponse> {
-    const { email, password, loginAsStudent } = loginDto;
+    const { email, password } = loginDto;
     
     const user = await this.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Handle parent logging in as student
-    if (loginAsStudent && user.userType === UserType.PARENT) {
-      return this.loginParentAsStudent(user, loginAsStudent);
-    }
-
-    // Handle student direct login
-    if (user.userType === UserType.STUDENT) {
-      const student = await this.studentRepository.findOne({
-        where: { user: { id: user.id } },
-        relations: ['user'],
-      });
-
-      if (!student?.canLoginDirectly) {
-        throw new UnauthorizedException('Student direct login is not allowed. Please use parent account.');
-      }
     }
 
     return this.generateAuthResponse(user);
@@ -102,6 +91,11 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { email, password, userType, ...userData } = registerDto;
+
+    // Validate that only student or parent can register publicly
+    if (!Object.values(PublicUserType).includes(userType as PublicUserType)) {
+      throw new BadRequestException('Only students and parents can register through public registration');
+    }
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
@@ -121,15 +115,15 @@ export class AuthService {
       password: hashedPassword,
       firstName: userData.firstName,
       lastName: userData.lastName,
-      userType,
-      role: this.getUserRoleFromType(userType),
+      userType: userType as UserType,
+      role: this.getUserRoleFromType(userType as UserType),
       emailVerified: false,
     });
 
     const savedUser = await this.userRepository.save(user);
 
     // Create specific user type record
-    await this.createUserTypeRecord(savedUser, userType, userData);
+    await this.createUserTypeRecord(savedUser, userType as UserType, userData);
 
     // Assign default claims
     await this.claimsService.assignDefaultClaims(savedUser);
@@ -143,63 +137,9 @@ export class AuthService {
     return this.generateAuthResponse(userWithClaims);
   }
 
-  private async loginParentAsStudent(parent: User, studentId: string): Promise<AuthResponse> {
-    // Verify parent can manage this student
-    const parentRecord = await this.parentRepository.findOne({
-      where: { user: { id: parent.id } },
-      relations: ['children', 'children.user', 'children.user.claims', 'children.user.claims.claim'],
-    });
-
-    const student = parentRecord?.children.find(child => child.id === studentId);
-    if (!student) {
-      throw new UnauthorizedException('You are not authorized to access this student account');
-    }
-
-    // Create a hybrid response with parent identity but student context
-    const studentUser = student.user;
-    const parentClaims = parent.claims.map(uc => uc.claim.name);
-    const studentClaims = studentUser.claims.map(uc => uc.claim.name);
-    
-    // Combine claims (parent gets their claims + student's claims)
-    const combinedClaims = [...new Set([...parentClaims, ...studentClaims])];
-    const combinedRoutes = [...new Set([
-      ...parent.getFrontendRoutes(),
-      ...studentUser.getFrontendRoutes(),
-    ])];
-
-    const payload: JwtPayload = {
-      sub: parent.id, // Keep parent as the authenticated user
-      email: parent.email,
-      userType: UserType.PARENT,
-      role: UserRole.PARENT,
-      claims: combinedClaims,
-      frontendRoutes: combinedRoutes,
-    };
-
-    const token = this.jwtService.sign(payload);
-
-    return {
-      access_token: token,
-      user: {
-        id: parent.id,
-        email: parent.email,
-        firstName: parent.firstName,
-        lastName: parent.lastName,
-        userType: UserType.PARENT,
-        role: UserRole.PARENT,
-        claims: combinedClaims,
-        frontendRoutes: combinedRoutes,
-        canManageStudents: parentRecord.children.map(child => child.id),
-      },
-    };
-  }
-
   private async generateAuthResponse(user: User): Promise<AuthResponse> {
-    const claims = user.claims
-      .filter(uc => uc.isValid)
-      .map(uc => uc.claim.name);
-    
-    const frontendRoutes = user.getFrontendRoutes();
+    const claims = user.claims?.map(uc => uc.claim.name) || [];
+    const frontendRoutes = user.claims?.map(uc => uc.claim.frontendRoute).filter(route => route) || [];
 
     const payload: JwtPayload = {
       sub: user.id,
@@ -210,10 +150,10 @@ export class AuthService {
       frontendRoutes,
     };
 
-    const token = this.jwtService.sign(payload);
+    const access_token = this.jwtService.sign(payload);
 
-    const response: AuthResponse = {
-      access_token: token,
+    const authResponse: AuthResponse = {
+      access_token,
       user: {
         id: user.id,
         email: user.email,
@@ -226,26 +166,35 @@ export class AuthService {
       },
     };
 
-    // Add parent-specific data
-    if (user.userType === UserType.PARENT && user.parent) {
-      const parentWithChildren = await this.parentRepository.findOne({
-        where: { id: user.parent.id },
-        relations: ['children'],
+    // If user is a parent, include their children information
+    if (user.userType === UserType.PARENT) {
+      const parent = await this.parentRepository.findOne({
+        where: { user: { id: user.id } },
+        relations: ['children', 'children.user'],
       });
-      response.user.canManageStudents = parentWithChildren?.children.map(child => child.id) || [];
+
+      if (parent?.children) {
+        authResponse.user.children = parent.children.map(child => ({
+          id: child.id,
+          firstName: child.user.firstName,
+          lastName: child.user.lastName,
+          studentId: child.studentId,
+          grade: child.grade,
+        }));
+      }
     }
 
-    return response;
+    return authResponse;
   }
 
   private getUserRoleFromType(userType: UserType): UserRole {
     switch (userType) {
-      case UserType.STAFF:
-        return UserRole.INSTRUCTOR; // Default, can be changed later
-      case UserType.PARENT:
-        return UserRole.PARENT;
       case UserType.STUDENT:
         return UserRole.STUDENT;
+      case UserType.PARENT:
+        return UserRole.PARENT;
+      case UserType.STAFF:
+        return UserRole.INSTRUCTOR; // Default for staff
       default:
         return UserRole.STUDENT;
     }
@@ -256,23 +205,12 @@ export class AuthService {
       case UserType.STUDENT:
         const student = this.studentRepository.create({
           user,
-          studentId: userData.studentId || `STU${Date.now()}`,
-          dateOfBirth: userData.dateOfBirth,
+          studentId: userData.studentId,
           grade: userData.grade,
-          canLoginDirectly: userData.canLoginDirectly || false,
+          dateOfBirth: userData.dateOfBirth ? new Date(userData.dateOfBirth) : null,
+          canLoginDirectly: true, // Allow direct login for public registration
         });
         await this.studentRepository.save(student);
-        break;
-
-      case UserType.STAFF:
-        const staff = this.staffRepository.create({
-          user,
-          employeeId: userData.employeeId || `EMP${Date.now()}`,
-          staffType: userData.staffType,
-          department: userData.department,
-          position: userData.position,
-        });
-        await this.staffRepository.save(staff);
         break;
 
       case UserType.PARENT:
@@ -280,17 +218,152 @@ export class AuthService {
           user,
           phone: userData.phone,
           relationship: userData.relationship,
+          emergencyContact: userData.emergencyContact,
         });
         await this.parentRepository.save(parent);
         break;
+
+      default:
+        throw new BadRequestException(`User type ${userType} is not allowed for public registration`);
     }
   }
 
-  async getUserById(id: string): Promise<User | null> {
-    return this.userRepository.findOne({
-      where: { id, isActive: true },
-      relations: ['claims', 'claims.claim', 'student', 'staff', 'parent'],
+  async buildNavigationMenu(user: User): Promise<any> {
+    const claims = user.claims?.map(uc => uc.claim.name) || [];
+    
+    const menuItems = [];
+
+    // Dashboard - available to all
+    menuItems.push({
+      label: 'Dashboard',
+      icon: 'dashboard',
+      route: '/dashboard',
     });
+
+    // Students section
+    if (claims.includes('students.view_all') || claims.includes('students.view_own')) {
+      const studentsMenu = {
+        label: 'Students',
+        icon: 'people',
+        children: [],
+      };
+
+      if (claims.includes('students.view_all')) {
+        studentsMenu.children.push({
+          label: 'All Students',
+          route: '/students',
+        });
+      }
+
+      if (claims.includes('students.view_own')) {
+        studentsMenu.children.push({
+          label: 'My Children',
+          route: '/students/my-children',
+        });
+      }
+
+      if (claims.includes('students.create')) {
+        studentsMenu.children.push({
+          label: 'Add Student',
+          route: '/students/create',
+        });
+      }
+
+      menuItems.push(studentsMenu);
+    }
+
+    // Courses section
+    if (claims.includes('courses.view_all') || claims.includes('courses.create')) {
+      const coursesMenu = {
+        label: 'Courses',
+        icon: 'book',
+        children: [],
+      };
+
+      coursesMenu.children.push({
+        label: 'All Courses',
+        route: '/courses',
+      });
+
+      if (claims.includes('courses.create')) {
+        coursesMenu.children.push({
+          label: 'Create Course',
+          route: '/courses/create',
+        });
+      }
+
+      menuItems.push(coursesMenu);
+    }
+
+    // Assessments section
+    if (claims.includes('assessments.view_all') || claims.includes('assessments.view_own')) {
+      const assessmentsMenu = {
+        label: 'Assessments',
+        icon: 'assignment',
+        children: [],
+      };
+
+      if (claims.includes('assessments.view_all')) {
+        assessmentsMenu.children.push({
+          label: 'All Assessments',
+          route: '/assessments',
+        });
+      }
+
+      if (claims.includes('assessments.view_own')) {
+        assessmentsMenu.children.push({
+          label: 'My Assessments',
+          route: '/assessments/my-assessments',
+        });
+      }
+
+      if (claims.includes('assessments.create')) {
+        assessmentsMenu.children.push({
+          label: 'Create Assessment',
+          route: '/assessments/create',
+        });
+      }
+
+      menuItems.push(assessmentsMenu);
+    }
+
+    // Reports section
+    if (claims.includes('reports.view_all') || claims.includes('reports.student_progress')) {
+      menuItems.push({
+        label: 'Reports',
+        icon: 'analytics',
+        route: '/reports',
+      });
+    }
+
+    // Admin section
+    if (claims.includes('system.admin')) {
+      const adminMenu = {
+        label: 'Administration',
+        icon: 'settings',
+        children: [
+          {
+            label: 'User Management',
+            route: '/admin/users',
+          },
+          {
+            label: 'Claims Management',
+            route: '/admin/claims',
+          },
+          {
+            label: 'System Settings',
+            route: '/admin/settings',
+          },
+        ],
+      };
+
+      menuItems.push(adminMenu);
+    }
+
+    return {
+      routes: user.claims?.map(uc => uc.claim.frontendRoute).filter(route => route) || [],
+      menuItems,
+    };
   }
 }
 

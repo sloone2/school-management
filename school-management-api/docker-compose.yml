@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: school-management-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: school_management
+      POSTGRES_USER: school_admin
+      POSTGRES_PASSWORD: school_password_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - school-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U school_admin -d school_management"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NestJS Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: school-management-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: school_admin
+      DB_PASSWORD: school_password_2024
+      DB_NAME: school_management
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production-2024
+      JWT_EXPIRES_IN: 24h
+      PORT: 3000
+      FRONTEND_URL: http://localhost:4200
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - school-network
+    volumes:
+      - api_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: school-management-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - school-network
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # pgAdmin for database management (development only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: school-management-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@school.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - school-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    profiles:
+      - development
+
+networks:
+  school-network:
+    driver: bridge
+    name: school-management-network
+
+volumes:
+  postgres_data:
+    name: school-management-postgres-data
+  redis_data:
+    name: school-management-redis-data
+  pgadmin_data:
+    name: school-management-pgadmin-data
+  api_uploads:
+    name: school-management-api-uploads
+

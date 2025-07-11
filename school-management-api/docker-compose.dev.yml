@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: school-management-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: school_management_dev
+      POSTGRES_USER: school_admin
+      POSTGRES_PASSWORD: school_password_dev
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - school-network-dev
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: school-management-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - school-network-dev
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: school-management-pgadmin-dev
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@school.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5051:80"
+    depends_on:
+      - postgres
+    networks:
+      - school-network-dev
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+
+networks:
+  school-network-dev:
+    driver: bridge
+    name: school-management-network-dev
+
+volumes:
+  postgres_dev_data:
+    name: school-management-postgres-dev-data
+  redis_dev_data:
+    name: school-management-redis-dev-data
+  pgadmin_dev_data:
+    name: school-management-pgadmin-dev-data
+

@@ -13,7 +13,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ 
     summary: 'User login',
-    description: 'Authenticate user and return JWT token. Supports parent login as student.'
+    description: 'Authenticate user and return JWT token.'
   })
   @ApiResponse({ 
     status: 200, 
@@ -47,7 +47,7 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ 
     summary: 'User registration',
-    description: 'Register a new user (student, parent, or staff)'
+    description: 'Register a new user (student or parent only). Staff and admin registration must be done through the admin portal.'
   })
   @ApiResponse({ 
     status: 201, 

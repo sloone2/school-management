@@ -19,8 +19,6 @@
                   </div>
                   }
                 </ngx-slick-carousel>
-                  
-                  
               </div>
           </div>
           <!-- /Login Banner -->
@@ -35,21 +33,48 @@
                               <a [routerLink]="routes.home" class="link-1">Back to Home</a>
                           </div>
                           <h1 class="fs-32 fw-bold topic">Sign into Your Account</h1>
-                          <form (ngSubmit)="directIndex()" class="mb-3 pb-3">
+                          
+                          <!-- Error Message -->
+                          @if (errorMessage) {
+                            <div class="alert alert-danger" role="alert">
+                              {{ errorMessage }}
+                            </div>
+                          }
+                          
+                          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mb-3 pb-3">
                               <div class="mb-3 position-relative">
                                   <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
                                   <div class="position-relative">
-                                      <input type="email" class="form-control form-control-lg">
+                                      <input 
+                                        type="email" 
+                                        class="form-control form-control-lg"
+                                        formControlName="email"
+                                        [class.is-invalid]="isFieldInvalid('email')"
+                                        placeholder="Enter your email">
                                       <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
                                   </div>
+                                  @if (isFieldInvalid('email')) {
+                                    <div class="invalid-feedback d-block">
+                                      {{ getFieldError('email') }}
+                                    </div>
+                                  }
                               </div>
                               <div class="mb-3 position-relative">
                                   <label class="form-label">Password <span class="text-danger ms-1">*</span></label>
                                   <div class="position-relative" id="passwordInput">
-                                      <input [type]="password ? 'text' : 'password'" class="pass-inputs form-control form-control-lg">
+                                      <input 
+                                        [type]="password ? 'text' : 'password'" 
+                                        class="pass-inputs form-control form-control-lg"
+                                        formControlName="password"
+                                        [class.is-invalid]="isFieldInvalid('password')"
+                                        placeholder="Enter your password">
                                       <span tabindex="0" (click)="togglePassword()" (keydown.enter)="togglePassword()" class="isax toggle-passwords fs-14" [ngClass]="password ? 'isax-eye' : 'isax-eye-slash'"></span>
-                                  </div>	
-                                  
+                                  </div>
+                                  @if (isFieldInvalid('password')) {
+                                    <div class="invalid-feedback d-block">
+                                      {{ getFieldError('password') }}
+                                    </div>
+                                  }
                               </div>
                               <div class="d-flex align-items-center justify-content-between mb-4">
                                   <div class="remember-me d-flex align-items-center">
@@ -65,7 +90,17 @@
                                   </div>
                               </div>
                               <div class="d-grid">
-                                  <button class="btn btn-secondary btn-lg" type="submit">Login <i class="isax isax-arrow-right-3 ms-1"></i></button>
+                                  <button 
+                                    class="btn btn-secondary btn-lg" 
+                                    type="submit"
+                                    [disabled]="isLoading || loginForm.invalid">
+                                    @if (isLoading) {
+                                      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                      Signing in...
+                                    } @else {
+                                      Login <i class="isax isax-arrow-right-3 ms-1"></i>
+                                    }
+                                  </button>
                               </div>
                           </form>
 

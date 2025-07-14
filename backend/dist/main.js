@@ -254,7 +254,7 @@ __decorate([
     (0, common_1.Post)('login'),
     (0, swagger_1.ApiOperation)({
         summary: 'User login',
-        description: 'Authenticate user and return JWT token. Supports parent login as student.'
+        description: 'Authenticate user and return JWT token.'
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
@@ -290,7 +290,7 @@ __decorate([
     (0, common_1.Post)('register'),
     (0, swagger_1.ApiOperation)({
         summary: 'User registration',
-        description: 'Register a new user (student, parent, or staff)'
+        description: 'Register a new user (student or parent only). Staff and admin registration must be done through the admin portal.'
     }),
     (0, swagger_1.ApiResponse)({
         status: 201,
@@ -512,13 +512,10 @@ let AuthService = class AuthService {
         return user;
     }
     async login(loginDto) {
-        const { email, password, loginAsStudent } = loginDto;
+        const { email, password } = loginDto;
         const user = await this.validateUser(email, password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
-        }
-        if (loginAsStudent && user.userType === user_entity_1.UserType.PARENT) {
-            return this.loginParentAsStudent(user, loginAsStudent);
         }
         if (user.userType === user_entity_1.UserType.STUDENT) {
             const student = await this.studentRepository.findOne({
@@ -539,65 +536,34 @@ let AuthService = class AuthService {
         if (existingUser) {
             throw new common_1.BadRequestException('User with this email already exists');
         }
+        let actualUserType;
+        if (userType === 'student') {
+            actualUserType = user_entity_1.UserType.STUDENT;
+        }
+        else if (userType === 'parent') {
+            actualUserType = user_entity_1.UserType.PARENT;
+        }
+        else {
+            throw new common_1.BadRequestException('Invalid user type. Only STUDENT and PARENT are allowed for public registration.');
+        }
         const hashedPassword = await bcrypt.hash(password, 12);
         const user = this.userRepository.create({
             email,
             password: hashedPassword,
             firstName: userData.firstName,
             lastName: userData.lastName,
-            userType,
-            role: this.getUserRoleFromType(userType),
+            userType: actualUserType,
+            role: this.getUserRoleFromType(actualUserType),
             emailVerified: false,
         });
         const savedUser = await this.userRepository.save(user);
-        await this.createUserTypeRecord(savedUser, userType, userData);
+        await this.createUserTypeRecord(savedUser, actualUserType, userData);
         await this.claimsService.assignDefaultClaims(savedUser);
         const userWithClaims = await this.userRepository.findOne({
             where: { id: savedUser.id },
             relations: ['claims', 'claims.claim'],
         });
         return this.generateAuthResponse(userWithClaims);
-    }
-    async loginParentAsStudent(parent, studentId) {
-        const parentRecord = await this.parentRepository.findOne({
-            where: { user: { id: parent.id } },
-            relations: ['children', 'children.user', 'children.user.claims', 'children.user.claims.claim'],
-        });
-        const student = parentRecord?.children.find(child => child.id === studentId);
-        if (!student) {
-            throw new common_1.UnauthorizedException('You are not authorized to access this student account');
-        }
-        const studentUser = student.user;
-        const parentClaims = parent.claims.map(uc => uc.claim.name);
-        const studentClaims = studentUser.claims.map(uc => uc.claim.name);
-        const combinedClaims = [...new Set([...parentClaims, ...studentClaims])];
-        const combinedRoutes = [...new Set([
-                ...parent.getFrontendRoutes(),
-                ...studentUser.getFrontendRoutes(),
-            ])];
-        const payload = {
-            sub: parent.id,
-            email: parent.email,
-            userType: user_entity_1.UserType.PARENT,
-            role: user_entity_1.UserRole.PARENT,
-            claims: combinedClaims,
-            frontendRoutes: combinedRoutes,
-        };
-        const token = this.jwtService.sign(payload);
-        return {
-            access_token: token,
-            user: {
-                id: parent.id,
-                email: parent.email,
-                firstName: parent.firstName,
-                lastName: parent.lastName,
-                userType: user_entity_1.UserType.PARENT,
-                role: user_entity_1.UserRole.PARENT,
-                claims: combinedClaims,
-                frontendRoutes: combinedRoutes,
-                canManageStudents: parentRecord.children.map(child => child.id),
-            },
-        };
     }
     async generateAuthResponse(user) {
         const claims = user.claims
@@ -759,15 +725,6 @@ __decorate([
     (0, class_validator_1.MinLength)(6),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        example: 'uuid-of-student',
-        description: 'Student ID for parent login (when parent wants to access student account)',
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUUID)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "loginAsStudent", void 0);
 
 
 /***/ }),
@@ -788,14 +745,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RegisterDto = void 0;
+exports.RegisterDto = exports.PublicUserType = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const user_entity_1 = __webpack_require__(/*! ../../users/entities/user.entity */ "./src/users/entities/user.entity.ts");
-const staff_entity_1 = __webpack_require__(/*! ../../users/entities/staff.entity */ "./src/users/entities/staff.entity.ts");
 const parent_entity_1 = __webpack_require__(/*! ../../users/entities/parent.entity */ "./src/users/entities/parent.entity.ts");
+var PublicUserType;
+(function (PublicUserType) {
+    PublicUserType["STUDENT"] = "student";
+    PublicUserType["PARENT"] = "parent";
+})(PublicUserType || (exports.PublicUserType = PublicUserType = {}));
 class RegisterDto {
 }
 exports.RegisterDto = RegisterDto;
@@ -835,19 +795,19 @@ __decorate([
 ], RegisterDto.prototype, "lastName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        enum: user_entity_1.UserType,
-        example: user_entity_1.UserType.STUDENT,
-        description: 'Type of user',
+        enum: PublicUserType,
+        example: PublicUserType.STUDENT,
+        description: 'Type of user (only STUDENT and PARENT allowed for public registration)',
     }),
-    (0, class_validator_1.IsEnum)(user_entity_1.UserType),
-    __metadata("design:type", typeof (_a = typeof user_entity_1.UserType !== "undefined" && user_entity_1.UserType) === "function" ? _a : Object)
+    (0, class_validator_1.IsEnum)(PublicUserType),
+    __metadata("design:type", String)
 ], RegisterDto.prototype, "userType", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         example: 'STU001',
         description: 'Student ID (required for students)',
     }),
-    (0, class_validator_1.ValidateIf)(o => o.userType === user_entity_1.UserType.STUDENT),
+    (0, class_validator_1.ValidateIf)(o => o.userType === PublicUserType.STUDENT),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "studentId", void 0);
@@ -880,43 +840,6 @@ __decorate([
 ], RegisterDto.prototype, "canLoginDirectly", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
-        example: 'EMP001',
-        description: 'Employee ID (required for staff)',
-    }),
-    (0, class_validator_1.ValidateIf)(o => o.userType === user_entity_1.UserType.STAFF),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "employeeId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        enum: staff_entity_1.StaffType,
-        example: staff_entity_1.StaffType.INSTRUCTOR,
-        description: 'Type of staff (required for staff)',
-    }),
-    (0, class_validator_1.ValidateIf)(o => o.userType === user_entity_1.UserType.STAFF),
-    (0, class_validator_1.IsEnum)(staff_entity_1.StaffType),
-    __metadata("design:type", typeof (_b = typeof staff_entity_1.StaffType !== "undefined" && staff_entity_1.StaffType) === "function" ? _b : Object)
-], RegisterDto.prototype, "staffType", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        example: 'Mathematics',
-        description: 'Department (for staff)',
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "department", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        example: 'Senior Teacher',
-        description: 'Position (for staff)',
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
         example: '+1234567890',
         description: 'Phone number (for parents)',
     }),
@@ -930,9 +853,9 @@ __decorate([
         example: parent_entity_1.ParentRelationship.FATHER,
         description: 'Relationship to student (for parents)',
     }),
-    (0, class_validator_1.ValidateIf)(o => o.userType === user_entity_1.UserType.PARENT),
+    (0, class_validator_1.ValidateIf)(o => o.userType === PublicUserType.PARENT),
     (0, class_validator_1.IsEnum)(parent_entity_1.ParentRelationship),
-    __metadata("design:type", typeof (_c = typeof parent_entity_1.ParentRelationship !== "undefined" && parent_entity_1.ParentRelationship) === "function" ? _c : Object)
+    __metadata("design:type", typeof (_a = typeof parent_entity_1.ParentRelationship !== "undefined" && parent_entity_1.ParentRelationship) === "function" ? _a : Object)
 ], RegisterDto.prototype, "relationship", void 0);
 
 

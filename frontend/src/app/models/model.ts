@@ -1223,3 +1223,14 @@ export interface instructorWithdraw {
   id: number;
   date: string;
 }
+
+export interface instructorGroup {
+  sNo?: number;
+  id?: string;
+  title: string;
+  description: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

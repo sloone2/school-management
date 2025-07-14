@@ -50,6 +50,34 @@ export class DataService {
         })
       );
   }
+  public getInstructorGroups(): Observable<apiResultFormat> {
+    return this.http.get<apiResultFormat>('assets/JSON/instructor-groups.json').pipe(
+        map((res: apiResultFormat) => {
+          return res;
+        })
+      );
+  }
+
+  // Backend API methods for groups
+  public getGroupsFromAPI(): Observable<any> {
+    return this.http.get<any>('/api/groups');
+  }
+
+  public createGroup(groupData: any): Observable<any> {
+    return this.http.post<any>('/api/groups', groupData);
+  }
+
+  public updateGroup(id: string, groupData: any): Observable<any> {
+    return this.http.patch<any>(`/api/groups/${id}`, groupData);
+  }
+
+  public deleteGroup(id: string): Observable<any> {
+    return this.http.delete<any>(`/api/groups/${id}`);
+  }
+
+  public getGroupById(id: string): Observable<any> {
+    return this.http.get<any>(`/api/groups/${id}`);
+  }
   public getInstructorQuizResult(): Observable<apiResultFormat> {
     return this.http.get<apiResultFormat>('assets/JSON/instructor-quiz-result.json').pipe(
         map((res: apiResultFormat) => {

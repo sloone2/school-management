@@ -23,6 +23,7 @@ const database_module_1 = __webpack_require__(/*! ./database/database.module */ 
 const auth_module_1 = __webpack_require__(/*! ./auth/auth.module */ "./src/auth/auth.module.ts");
 const claims_module_1 = __webpack_require__(/*! ./claims/claims.module */ "./src/claims/claims.module.ts");
 const users_module_1 = __webpack_require__(/*! ./users/users.module */ "./src/users/users.module.ts");
+const groups_module_1 = __webpack_require__(/*! ./groups/groups.module */ "./src/groups/groups.module.ts");
 const health_controller_1 = __webpack_require__(/*! ./health/health.controller */ "./src/health/health.controller.ts");
 let AppModule = class AppModule {
 };
@@ -38,6 +39,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             claims_module_1.ClaimsModule,
             users_module_1.UsersModule,
+            groups_module_1.GroupsModule,
         ],
         controllers: [health_controller_1.HealthController],
     })
@@ -1852,6 +1854,391 @@ exports.DatabaseModule = DatabaseModule = __decorate([
         ],
     })
 ], DatabaseModule);
+
+
+/***/ }),
+
+/***/ "./src/groups/dto/create-group.dto.ts":
+/*!********************************************!*\
+  !*** ./src/groups/dto/create-group.dto.ts ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateGroupDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class CreateGroupDto {
+}
+exports.CreateGroupDto = CreateGroupDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Group title' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateGroupDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Group description' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateGroupDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Group active status', required: false, default: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateGroupDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/groups/dto/update-group.dto.ts":
+/*!********************************************!*\
+  !*** ./src/groups/dto/update-group.dto.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateGroupDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const create_group_dto_1 = __webpack_require__(/*! ./create-group.dto */ "./src/groups/dto/create-group.dto.ts");
+class UpdateGroupDto extends (0, swagger_1.PartialType)(create_group_dto_1.CreateGroupDto) {
+}
+exports.UpdateGroupDto = UpdateGroupDto;
+
+
+/***/ }),
+
+/***/ "./src/groups/entities/group.entity.ts":
+/*!*********************************************!*\
+  !*** ./src/groups/entities/group.entity.ts ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Group = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let Group = class Group {
+};
+exports.Group = Group;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Group.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Group.prototype, "title", void 0);
+__decorate([
+    (0, typeorm_1.Column)('text'),
+    __metadata("design:type", String)
+], Group.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], Group.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Group.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Group.prototype, "updatedAt", void 0);
+exports.Group = Group = __decorate([
+    (0, typeorm_1.Entity)('groups')
+], Group);
+
+
+/***/ }),
+
+/***/ "./src/groups/groups.controller.ts":
+/*!*****************************************!*\
+  !*** ./src/groups/groups.controller.ts ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GroupsController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const groups_service_1 = __webpack_require__(/*! ./groups.service */ "./src/groups/groups.service.ts");
+const create_group_dto_1 = __webpack_require__(/*! ./dto/create-group.dto */ "./src/groups/dto/create-group.dto.ts");
+const update_group_dto_1 = __webpack_require__(/*! ./dto/update-group.dto */ "./src/groups/dto/update-group.dto.ts");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../auth/guards/jwt-auth.guard */ "./src/auth/guards/jwt-auth.guard.ts");
+const claims_guard_1 = __webpack_require__(/*! ../auth/guards/claims.guard */ "./src/auth/guards/claims.guard.ts");
+const claims_decorator_1 = __webpack_require__(/*! ../auth/decorators/claims.decorator */ "./src/auth/decorators/claims.decorator.ts");
+let GroupsController = class GroupsController {
+    constructor(groupsService) {
+        this.groupsService = groupsService;
+    }
+    async create(createGroupDto) {
+        return this.groupsService.create(createGroupDto);
+    }
+    async findAll() {
+        return this.groupsService.findAll();
+    }
+    async findActive() {
+        return this.groupsService.findActive();
+    }
+    async findOne(id) {
+        return this.groupsService.findOne(id);
+    }
+    async update(id, updateGroupDto) {
+        return this.groupsService.update(id, updateGroupDto);
+    }
+    async toggleActive(id) {
+        return this.groupsService.toggleActive(id);
+    }
+    async remove(id) {
+        return this.groupsService.remove(id);
+    }
+};
+exports.GroupsController = GroupsController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.create'),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new group' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Group created successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_group_dto_1.CreateGroupDto !== "undefined" && create_group_dto_1.CreateGroupDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.view_all'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all groups' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Groups retrieved successfully' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('active'),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.view_all'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active groups' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Active groups retrieved successfully' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "findActive", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.view_all'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get group by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Group ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Group retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Group not found' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.update'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update group by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Group ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Group updated successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Group not found' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof update_group_dto_1.UpdateGroupDto !== "undefined" && update_group_dto_1.UpdateGroupDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)(':id/toggle-active'),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.update'),
+    (0, swagger_1.ApiOperation)({ summary: 'Toggle group active status' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Group ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Group status toggled successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Group not found' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "toggleActive", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(claims_guard_1.ClaimsGuard),
+    (0, claims_decorator_1.RequireClaims)('groups.delete'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete group by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Group ID' }),
+    (0, swagger_1.ApiResponse)({ status: 204, description: 'Group deleted successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Group not found' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], GroupsController.prototype, "remove", null);
+exports.GroupsController = GroupsController = __decorate([
+    (0, swagger_1.ApiTags)('Groups'),
+    (0, common_1.Controller)('groups'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof groups_service_1.GroupsService !== "undefined" && groups_service_1.GroupsService) === "function" ? _a : Object])
+], GroupsController);
+
+
+/***/ }),
+
+/***/ "./src/groups/groups.module.ts":
+/*!*************************************!*\
+  !*** ./src/groups/groups.module.ts ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GroupsModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const groups_service_1 = __webpack_require__(/*! ./groups.service */ "./src/groups/groups.service.ts");
+const groups_controller_1 = __webpack_require__(/*! ./groups.controller */ "./src/groups/groups.controller.ts");
+const group_entity_1 = __webpack_require__(/*! ./entities/group.entity */ "./src/groups/entities/group.entity.ts");
+let GroupsModule = class GroupsModule {
+};
+exports.GroupsModule = GroupsModule;
+exports.GroupsModule = GroupsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([group_entity_1.Group])],
+        controllers: [groups_controller_1.GroupsController],
+        providers: [groups_service_1.GroupsService],
+        exports: [groups_service_1.GroupsService],
+    })
+], GroupsModule);
+
+
+/***/ }),
+
+/***/ "./src/groups/groups.service.ts":
+/*!**************************************!*\
+  !*** ./src/groups/groups.service.ts ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GroupsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const group_entity_1 = __webpack_require__(/*! ./entities/group.entity */ "./src/groups/entities/group.entity.ts");
+let GroupsService = class GroupsService {
+    constructor(groupRepository) {
+        this.groupRepository = groupRepository;
+    }
+    async create(createGroupDto) {
+        const group = this.groupRepository.create(createGroupDto);
+        return this.groupRepository.save(group);
+    }
+    async findAll() {
+        return this.groupRepository.find({
+            order: { createdAt: 'DESC' },
+        });
+    }
+    async findOne(id) {
+        const group = await this.groupRepository.findOne({
+            where: { id },
+        });
+        if (!group) {
+            throw new common_1.NotFoundException(`Group with ID ${id} not found`);
+        }
+        return group;
+    }
+    async update(id, updateGroupDto) {
+        const group = await this.findOne(id);
+        Object.assign(group, updateGroupDto);
+        return this.groupRepository.save(group);
+    }
+    async remove(id) {
+        const group = await this.findOne(id);
+        await this.groupRepository.remove(group);
+    }
+    async findActive() {
+        return this.groupRepository.find({
+            where: { isActive: true },
+            order: { createdAt: 'DESC' },
+        });
+    }
+    async toggleActive(id) {
+        const group = await this.findOne(id);
+        group.isActive = !group.isActive;
+        return this.groupRepository.save(group);
+    }
+};
+exports.GroupsService = GroupsService;
+exports.GroupsService = GroupsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(group_entity_1.Group)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], GroupsService);
 
 
 /***/ }),

@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "id": "1",
+            "title": "Web Development Group",
+            "description": "A group focused on modern web development technologies including HTML, CSS, JavaScript, and frameworks like Angular and React.",
+            "isActive": true,
+            "createdAt": "22 Aug 2025, 05:40 PM"
+        },
+        {
+            "id": "2",
+            "title": "Mobile App Development",
+            "description": "This group covers mobile application development for both iOS and Android platforms using various technologies and frameworks.",
+            "isActive": true,
+            "createdAt": "10 Aug 2025, 10:15 AM"
+        },
+        {
+            "id": "3",
+            "title": "Data Science & Analytics",
+            "description": "A comprehensive group covering data science, machine learning, statistical analysis, and data visualization techniques.",
+            "isActive": false,
+            "createdAt": "26 Jul 2025, 01:30 PM"
+        },
+        {
+            "id": "4",
+            "title": "UI/UX Design",
+            "description": "Focus on user interface and user experience design principles, tools, and best practices for creating engaging digital experiences.",
+            "isActive": true,
+            "createdAt": "15 May 2025, 04:00 PM"
+        },
+        {
+            "id": "5",
+            "title": "Database Management",
+            "description": "Covers database design, SQL, NoSQL databases, and database administration for various database management systems.",
+            "isActive": true,
+            "createdAt": "05 May 2025, 02:20 PM"
+        }
+    ],
+    "totalData": 5
+}
+

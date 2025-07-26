@@ -5,7 +5,6 @@ import { InstructorRoutingModule } from './instructor-routing.module';
 import { InstructorComponent } from './instructor.component';
 import { FeatherIconModule } from 'src/app/shared/module/feather.module';
 import { InstructorAnnouncementsComponent } from './instructor-announcements/instructor-announcements.component';
-import { InstructorManageGroupsComponent } from './instructor-manage-groups/instructor-manage-groups.component';
 import { InstructorAssignmentComponent } from './instructor-assignment/instructor-assignment.component';
 import { InstructorQuizComponent } from './instructor-quiz/instructor-quiz.component';
 import { InstructorTicketsComponent } from './instructor-tickets/instructor-tickets.component';
@@ -21,7 +20,6 @@ import { CustomPaginationModule } from 'src/app/shared/service/custom-pagination
   declarations: [
     InstructorComponent,
     InstructorAnnouncementsComponent,
-    InstructorManageGroupsComponent,
     InstructorAssignmentComponent,
     InstructorQuizComponent,
     InstructorTicketsComponent,

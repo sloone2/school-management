@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { InstructorComponent } from './instructor.component';
 import { InstructorAssignmentComponent } from './instructor-assignment/instructor-assignment.component';
 import { InstructorAnnouncementsComponent } from './instructor-announcements/instructor-announcements.component';
-import { InstructorManageGroupsComponent } from './instructor-manage-groups/instructor-manage-groups.component';
 import { InstructorQuizComponent } from './instructor-quiz/instructor-quiz.component';
 import { InstructorTicketsComponent } from './instructor-tickets/instructor-tickets.component';
 import { InstructorCourseComponent } from './instructor-course/instructor-course.component';
@@ -40,10 +39,6 @@ const routes: Routes = [
       {
         path: 'instructor-announcements',
         component: InstructorAnnouncementsComponent,
-      },
-      {
-        path: 'instructor-manage-groups',
-        component: InstructorManageGroupsComponent,
       },
       {
         path: 'instructor-assignment',

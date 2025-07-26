@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InstructorAnnouncementsComponent } from './instructor-announcements.component';
+import { InstructorManageGroupsComponent } from './manage-groups.component';
 
 describe('InstructorAnnouncementsComponent', () => {
-  let component: InstructorAnnouncementsComponent;
-  let fixture: ComponentFixture<InstructorAnnouncementsComponent>;
+  let component: InstructorManageGroupsComponent;
+  let fixture: ComponentFixture<InstructorManageGroupsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InstructorAnnouncementsComponent]
+      imports: [InstructorManageGroupsComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(InstructorAnnouncementsComponent);
+
+    fixture = TestBed.createComponent(InstructorManageGroupsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

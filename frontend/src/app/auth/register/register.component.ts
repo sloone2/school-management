@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { welcomeLogin } from 'src/app/models/model';
 import { DataService } from 'src/app/shared/service/data/data.service';
-import { ApiService, RegisterRequest } from 'src/app/shared/service/api/api.service';
+import { RegisterRequest, AuthService } from '../auth.service';
 import { routes } from 'src/app/shared/service/routes/routes';
 
 @Component({
@@ -15,7 +15,7 @@ import { routes } from 'src/app/shared/service/routes/routes';
 export class RegisterComponent {
   routes = routes;
   public welcomeLogin: welcomeLogin[] = [];
-  public registerForm!: FormGroup; // Use definite assignment assertion
+  public registerForm!: FormGroup;
   public isLoading = false;
   public errorMessage = '';
   password: boolean[] = [false, false]; // For password and confirm password
@@ -50,12 +50,12 @@ export class RegisterComponent {
         }
       }
     ]
-  }
+  };
 
   constructor(
     private DataService: DataService,
     private formBuilder: FormBuilder,
-    private apiService: ApiService,
+    private authService: AuthService,
     public router: Router
   ) {
     this.welcomeLogin = this.DataService.welcomeLogin;
@@ -89,12 +89,12 @@ export class RegisterComponent {
   private passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
-    
+
     // Fix null safety issue
     if (confirmPassword?.hasError('passwordMismatch')) {
       const errors = confirmPassword.errors;
@@ -105,7 +105,7 @@ export class RegisterComponent {
         }
       }
     }
-    
+
     return null;
   }
 
@@ -127,7 +127,7 @@ export class RegisterComponent {
     relationshipControl?.updateValueAndValidity();
   }
 
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     if (this.registerForm.invalid) {
       this.markFormGroupTouched();
       return;
@@ -136,40 +136,92 @@ export class RegisterComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    try {
-      const formValue = this.registerForm.value;
-      const userData: RegisterRequest = {
-        email: formValue.email,
-        password: formValue.password,
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        userType: formValue.userType
-      };
+    const formValue = this.registerForm.value;
+    const userData: RegisterRequest = {
+      email: formValue.email,
+      password: formValue.password,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      userType: formValue.userType
+    };
 
-      // Add user-type specific fields
-      if (formValue.userType === 'student') {
-        userData.studentId = formValue.studentId;
-        userData.dateOfBirth = formValue.dateOfBirth;
-        userData.grade = formValue.grade;
-        userData.canLoginDirectly = formValue.canLoginDirectly;
-      } else if (formValue.userType === 'parent') {
-        userData.phone = formValue.phone;
-        userData.relationship = formValue.relationship;
-      }
-
-      const response = await this.apiService.register(userData);
-      
-      // Redirect based on user type
-      this.redirectUser(response.user);
-      
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Registration failed. Please try again.';
-    } finally {
-      this.isLoading = false;
+    // Add user type specific fields
+    if (formValue.userType === 'student') {
+      userData.studentId = formValue.studentId;
+      userData.dateOfBirth = formValue.dateOfBirth;
+      userData.grade = formValue.grade;
+      userData.canLoginDirectly = formValue.canLoginDirectly;
+    } else if (formValue.userType === 'parent') {
+      userData.phone = formValue.phone;
+      userData.relationship = formValue.relationship;
     }
+
+    // Note: Using the register method from AuthService which doesn't have ExecutionOptions
+    // but still benefits from the ApiService error handling through the post method
+    this.authService.register(userData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.handleRegistrationSuccess(response);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.handleRegistrationError(error);
+      }
+    });
+  }
+
+  private handleRegistrationSuccess(response: any): void {
+    // Clear any error messages
+    this.errorMessage = '';
+
+    // Show success message (optional)
+
+
+    // Redirect user based on their type
+    this.redirectUser(response.user);
+  }
+
+  private handleRegistrationError(error: any): void {
+    // Clear any previous error messages
+    this.errorMessage = '';
+
+    // Handle different types of errors
+    if (error.status === 409) {
+      this.errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+    } else if (error.status === 400) {
+      // Handle validation errors from server
+      if (error.error?.message) {
+        this.errorMessage = error.error.message;
+      } else if (error.error?.errors) {
+        // Handle multiple validation errors
+        const errors = error.error.errors;
+        this.errorMessage = Object.values(errors).join(', ');
+      } else {
+        this.errorMessage = 'Invalid registration data. Please check your information and try again.';
+      }
+    } else if (error.status === 422) {
+      this.errorMessage = 'Please check your information and try again.';
+    } else if (error.status === 0) {
+      this.errorMessage = 'Network error. Please check your internet connection.';
+    } else if (error.status >= 500) {
+      this.errorMessage = 'Server error. Please try again later.';
+    } else {
+      // Extract message from error response
+      const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
+      this.errorMessage = errorMessage;
+    }
+
+    // Log error for debugging
+    console.error('Registration error:', error);
+
+    // Optional: Show toast notification for better UX
+
   }
 
   private redirectUser(user: any): void {
+    // Clear any error messages on successful registration
+    this.errorMessage = '';
+
     // Redirect based on user type
     switch (user.userType) {
       case 'student':
@@ -296,5 +348,41 @@ export class RegisterComponent {
   private resetStrength(): void {
     this.strengthLevel = '';
     this.passwordInfoMessage = null;
+  }
+
+  // Additional helper methods for better UX
+
+  /**
+   * Clear error message when user starts typing
+   */
+  onFieldFocus(): void {
+    if (this.errorMessage) {
+      this.errorMessage = '';
+    }
+  }
+
+  /**
+   * Check if form is ready to submit
+   */
+  get canSubmit(): boolean {
+    return this.registerForm.valid && !this.isLoading;
+  }
+
+  /**
+   * Get loading button text
+   */
+  get submitButtonText(): string {
+    return this.isLoading ? 'Creating Account...' : 'Create Account';
+  }
+
+  /**
+   * Check if specific user type fields should be shown
+   */
+  shouldShowStudentFields(): boolean {
+    return this.selectedUserType === 'student';
+  }
+
+  shouldShowParentFields(): boolean {
+    return this.selectedUserType === 'parent';
   }
 }

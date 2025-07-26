@@ -1,3 +1,5 @@
+import { Observable, throwError, timer } from 'rxjs';
+import { catchError, retryWhen, delayWhen, tap, finalize } from 'rxjs/operators';
 import { TRANSLATIONS } from '../exceptions/translations';
 import {
   BaseException,
@@ -30,13 +32,13 @@ interface ConfirmationOptions {
 
 interface ErrorHandler {
   inProgress: boolean;
-  execute(operation: () => Promise<any>, options?: ExecuteOptions): Promise<any>;
-  executeWithConfirmation(
-    operation: () => Promise<any>,
+  execute<T>(operation: () => Observable<T>, options?: ExecuteOptions): Promise<T>;
+  executeWithConfirmation<T>(
+    operation: () => Observable<T>,
     action: string,
     confirmOptions?: ConfirmationOptions,
     executeOptions?: ExecuteOptions
-  ): Promise<any>;
+  ): Promise<T>;
   showSuccess(message: string, title?: string): void;
   showError(message: string, title?: string): void;
   showWarning(message: string, title?: string): void;
@@ -63,16 +65,12 @@ export function errorSuccessHandler(): ErrorHandler {
 
     console.error('Error logged:', errorLog);
 
-    // Store in localStorage as fallback
     try {
       const existingLogs = JSON.parse(localStorage.getItem('errorLogs') || '[]');
       existingLogs.push(errorLog);
-
-      // Keep only last 50 errors
       if (existingLogs.length > 50) {
         existingLogs.splice(0, existingLogs.length - 50);
       }
-
       localStorage.setItem('errorLogs', JSON.stringify(existingLogs));
     } catch (storageError) {
       console.warn('Failed to store error log:', storageError);
@@ -125,7 +123,6 @@ export function errorSuccessHandler(): ErrorHandler {
         }
       });
     } else {
-      // Fallback to browser alert
       alert(`${title || type.toUpperCase()}: ${message}`);
     }
   };
@@ -148,14 +145,16 @@ export function errorSuccessHandler(): ErrorHandler {
           resolve(result.isConfirmed);
         });
       } else {
-        // Fallback to browser confirm
         const confirmed = confirm(`${options.title || 'Confirm'}\n${options.text || 'Are you sure?'}`);
         resolve(confirmed);
       }
     });
   };
 
-  const execute = async (operation: () => Promise<any>, options: ExecuteOptions = {}): Promise<any> => {
+  const execute = <T>(
+    operation: () => Observable<T>,
+    options: ExecuteOptions = {}
+  ): Promise<T> => {
     const {
       progressMessage = TRANSLATIONS.PROGRESS.PROCESSING,
       showProgress = false,
@@ -169,93 +168,92 @@ export function errorSuccessHandler(): ErrorHandler {
     inProgress = true;
     let progressAlert: any = null;
 
-    try {
-      if (showProgress && typeof Swal !== 'undefined') {
-        progressAlert = Swal.fire({
-          title: progressMessage,
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showConfirmButton: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
-        });
-      }
-
-      let lastError: any;
-      for (let attempt = 0; attempt <= retryAttempts; attempt++) {
-        try {
-          const result = await operation();
-
-          if (progressAlert) {
-            progressAlert.close();
-          }
-
-          if (showSuccessAlert) {
-            showAlert('success', successMessage);
-          }
-
-          return result;
-        } catch (error: any) {
-          lastError = error;
-
-          if (attempt < retryAttempts && error?.code !== 'AUTH_ERROR') {
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
-            continue;
-          }
-
-          throw error;
+    if (showProgress && typeof Swal !== 'undefined') {
+      progressAlert = Swal.fire({
+        title: progressMessage,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
-      }
-    } catch (error: any) {
-      if (progressAlert) {
-        progressAlert.close();
-      }
-
-      logError(error, 'Execute Operation');
-
-      const message = getErrorMessage(error);
-      const title = errorTitle || getErrorTitle(error);
-
-      showAlert('error', message, title);
-      throw error;
-    } finally {
-      inProgress = false;
+      });
     }
+
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+
+      operation()
+        .pipe(
+          retryWhen(errors =>
+            errors.pipe(
+              tap(err => {
+                if (err?.code === 'AUTH_ERROR') {
+                  throw err; // لا تعيد المحاولة على خطأ المصادقة
+                }
+              }),
+              delayWhen(() => timer(retryDelay)),
+              tap(() => {
+                if (++attempts > retryAttempts) {
+                  throw new Error('Max retry attempts reached');
+                }
+              })
+            )
+          ),
+          catchError(err => {
+            logError(err, 'Execute Operation');
+
+            if (progressAlert) progressAlert.close();
+
+            const message = getErrorMessage(err);
+            const title = errorTitle || getErrorTitle(err);
+            showAlert('error', message, title);
+
+            reject(err);
+            return throwError(() => err);
+          }),
+          tap(() => {
+            if (showSuccessAlert) {
+              showAlert('success', successMessage);
+            }
+          }),
+          finalize(() => {
+            inProgress = false;
+            if (progressAlert) progressAlert.close();
+          })
+        )
+        .subscribe({
+          next: res => resolve(res),
+          error: err => reject(err)
+        });
+    });
   };
 
-  const executeWithConfirmation = async (
-    operation: () => Promise<any>,
+  const executeWithConfirmation = async <T>(
+    operation: () => Observable<T>,
     action: string,
     confirmOptions: ConfirmationOptions = {},
     executeOptions: ExecuteOptions = {}
-  ): Promise<any> => {
+  ): Promise<T> => {
     const actionKey = action.toUpperCase();
     const confirmActions = TRANSLATIONS.CONFIRMATIONS.ACTIONS as any;
     const successActions = TRANSLATIONS.SUCCESS.ACTIONS as any;
 
     const defaultConfirmOptions = {
-      title: confirmActions[actionKey]?.TITLE ||
-        TRANSLATIONS.CONFIRMATIONS.DEFAULT_TITLE,
-      text: confirmActions[actionKey]?.TEXT ||
-        TRANSLATIONS.CONFIRMATIONS.DEFAULT_TEXT,
+      title: confirmActions[actionKey]?.TITLE || TRANSLATIONS.CONFIRMATIONS.DEFAULT_TITLE,
+      text: confirmActions[actionKey]?.TEXT || TRANSLATIONS.CONFIRMATIONS.DEFAULT_TEXT,
       icon: confirmActions[actionKey]?.ICON || 'question',
-      confirmButtonText: confirmActions[actionKey]?.CONFIRM ||
-        TRANSLATIONS.BUTTONS.CONFIRM,
+      confirmButtonText: confirmActions[actionKey]?.CONFIRM || TRANSLATIONS.BUTTONS.CONFIRM,
       cancelButtonText: TRANSLATIONS.BUTTONS.CANCEL
     };
 
     const finalConfirmOptions = { ...defaultConfirmOptions, ...confirmOptions };
 
     const confirmed = await showConfirmation(finalConfirmOptions);
-
-    if (!confirmed) {
-      throw new Error('Operation cancelled by user');
-    }
+    if (!confirmed) throw new Error('Operation cancelled by user');
 
     const defaultExecuteOptions = {
-      successMessage: successActions[actionKey] ||
-        TRANSLATIONS.SUCCESS.OPERATION_COMPLETED
+      successMessage: successActions[actionKey] || TRANSLATIONS.SUCCESS.OPERATION_COMPLETED
     };
 
     const finalExecuteOptions = { ...defaultExecuteOptions, ...executeOptions };

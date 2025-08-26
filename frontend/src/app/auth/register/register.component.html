@@ -19,14 +19,12 @@
                     </div>
                     }
                   </ngx-slick-carousel>
-                    
-                    
                 </div>
             </div>
             <!-- /Login Banner -->
   
             <div class="col-md-6 login-wrap-bg">
-                <!-- Login -->
+                <!-- Register -->
                 <div class="login-wrapper">
                     <div class="loginbox">
                         <div class="w-100">
@@ -34,38 +32,236 @@
                                 <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
                                 <a [routerLink]="routes.home" class="link-1">Back to Home</a>
                             </div>
-                            <h1 class="fs-32 fw-bold topic">Sign up</h1>
-                            <form (ngSubmit)="directIndex()" class="mb-3 pb-3">
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">Full Name<span class="text-danger ms-1">*</span></label>
-                                    <div class="position-relative">
-                                        <input type="text" class="form-control form-control-lg">
-                                        <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
+                            <h1 class="fs-32 fw-bold topic">Create Your Account</h1>
+                            
+                            <!-- Error Message -->
+                            @if (errorMessage) {
+                              <div class="alert alert-danger" role="alert">
+                                {{ errorMessage }}
+                              </div>
+                            }
+                            
+                            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mb-3 pb-3">
+                                <!-- User Type Selection -->
+                                <div class="mb-3">
+                                    <label class="form-label">I am a<span class="text-danger ms-1">*</span></label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input 
+                                                  class="form-check-input" 
+                                                  type="radio" 
+                                                  formControlName="userType"
+                                                  value="student" 
+                                                  id="userTypeStudent">
+                                                <label class="form-check-label" for="userTypeStudent">
+                                                    Student
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input 
+                                                  class="form-check-input" 
+                                                  type="radio" 
+                                                  formControlName="userType"
+                                                  value="parent" 
+                                                  id="userTypeParent">
+                                                <label class="form-check-label" for="userTypeParent">
+                                                    Parent
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (isFieldInvalid('userType')) {
+                                      <div class="invalid-feedback d-block">
+                                        {{ getFieldError('userType') }}
+                                      </div>
+                                    }
+                                </div>
+
+                                <!-- Basic Information -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3 position-relative">
+                                            <label class="form-label">First Name<span class="text-danger ms-1">*</span></label>
+                                            <div class="position-relative">
+                                                <input 
+                                                  type="text" 
+                                                  class="form-control form-control-lg"
+                                                  formControlName="firstName"
+                                                  [class.is-invalid]="isFieldInvalid('firstName')"
+                                                  placeholder="Enter your first name">
+                                                <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
+                                            </div>
+                                            @if (isFieldInvalid('firstName')) {
+                                              <div class="invalid-feedback d-block">
+                                                {{ getFieldError('firstName') }}
+                                              </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3 position-relative">
+                                            <label class="form-label">Last Name<span class="text-danger ms-1">*</span></label>
+                                            <div class="position-relative">
+                                                <input 
+                                                  type="text" 
+                                                  class="form-control form-control-lg"
+                                                  formControlName="lastName"
+                                                  [class.is-invalid]="isFieldInvalid('lastName')"
+                                                  placeholder="Enter your last name">
+                                                <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
+                                            </div>
+                                            @if (isFieldInvalid('lastName')) {
+                                              <div class="invalid-feedback d-block">
+                                                {{ getFieldError('lastName') }}
+                                              </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div class="mb-3 position-relative">
                                     <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
                                     <div class="position-relative">
-                                        <input type="email" class="form-control form-control-lg">
+                                        <input 
+                                          type="email" 
+                                          class="form-control form-control-lg"
+                                          formControlName="email"
+                                          [class.is-invalid]="isFieldInvalid('email')"
+                                          placeholder="Enter your email">
                                         <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
                                     </div>
+                                    @if (isFieldInvalid('email')) {
+                                      <div class="invalid-feedback d-block">
+                                        {{ getFieldError('email') }}
+                                      </div>
+                                    }
                                 </div>
+
+                                <!-- Student-specific fields -->
+                                @if (selectedUserType === 'student') {
+                                  <div class="student-fields">
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                        <div class="mb-3 position-relative">
+                                          <label class="form-label">Student ID<span class="text-danger ms-1">*</span></label>
+                                          <div class="position-relative">
+                                            <input 
+                                              type="text" 
+                                              class="form-control form-control-lg"
+                                              formControlName="studentId"
+                                              [class.is-invalid]="isFieldInvalid('studentId')"
+                                              placeholder="Enter student ID">
+                                            <span><i class="isax isax-card input-icon text-gray-7 fs-14"></i></span>
+                                          </div>
+                                          @if (isFieldInvalid('studentId')) {
+                                            <div class="invalid-feedback d-block">
+                                              {{ getFieldError('studentId') }}
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6">
+                                        <div class="mb-3 position-relative">
+                                          <label class="form-label">Grade</label>
+                                          <div class="position-relative">
+                                            <input 
+                                              type="text" 
+                                              class="form-control form-control-lg"
+                                              formControlName="grade"
+                                              placeholder="Enter grade (e.g., Grade 5)">
+                                            <span><i class="isax isax-book input-icon text-gray-7 fs-14"></i></span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="mb-3 position-relative">
+                                      <label class="form-label">Date of Birth</label>
+                                      <div class="position-relative">
+                                        <input 
+                                          type="date" 
+                                          class="form-control form-control-lg"
+                                          formControlName="dateOfBirth">
+                                      </div>
+                                    </div>
+                                    <div class="mb-3">
+                                      <div class="form-check">
+                                        <input 
+                                          class="form-check-input" 
+                                          type="checkbox" 
+                                          formControlName="canLoginDirectly"
+                                          id="canLoginDirectly">
+                                        <label class="form-check-label" for="canLoginDirectly">
+                                          Allow direct login (without parent supervision)
+                                        </label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                }
+
+                                <!-- Parent-specific fields -->
+                                @if (selectedUserType === 'parent') {
+                                  <div class="parent-fields">
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                        <div class="mb-3 position-relative">
+                                          <label class="form-label">Phone Number</label>
+                                          <div class="position-relative">
+                                            <input 
+                                              type="tel" 
+                                              class="form-control form-control-lg"
+                                              formControlName="phone"
+                                              placeholder="Enter phone number">
+                                            <span><i class="isax isax-call input-icon text-gray-7 fs-14"></i></span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6">
+                                        <div class="mb-3">
+                                          <label class="form-label">Relationship<span class="text-danger ms-1">*</span></label>
+                                          <select 
+                                            class="form-select form-control-lg"
+                                            formControlName="relationship"
+                                            [class.is-invalid]="isFieldInvalid('relationship')">
+                                            <option value="">Select relationship</option>
+                                            <option value="father">Father</option>
+                                            <option value="mother">Mother</option>
+                                            <option value="guardian">Guardian</option>
+                                            <option value="other">Other</option>
+                                          </select>
+                                          @if (isFieldInvalid('relationship')) {
+                                            <div class="invalid-feedback d-block">
+                                              {{ getFieldError('relationship') }}
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                }
+
+                                <!-- Password fields -->
                                 <div class="mb-3 position-relative">
-                                    <label class="form-label">New Password <span class="text-danger"> *</span></label>
+                                    <label class="form-label">Password <span class="text-danger"> *</span></label>
                                     <div id="passwordInput" class="pass-group">
                                         <div class="pass-group mb-3">
                                             <input
-                                          [type]="password[0] ? 'text' : 'password'"
-                                          id="password"
-                                          class="pass-input form-control form-control-lg"
-                                          (input)="checkPasswordStrength($event)"
-                                        />
-                                        <span class="isax toggle-password fs-14"
-                                            [ngClass]="password[0] ? 'isax-eye' : 'isax-eye-slash'"
-                                            (click)="togglePassword(0)"
-                                            (keydown.enter)="togglePassword(0)"
-                                            tabindex="0"
-                                            ></span>
+                                              [type]="password[0] ? 'text' : 'password'"
+                                              id="password"
+                                              class="pass-input form-control form-control-lg"
+                                              formControlName="password"
+                                              [class.is-invalid]="isFieldInvalid('password')"
+                                              (input)="checkPasswordStrength($event)"
+                                              placeholder="Enter your password"
+                                            />
+                                            <span class="isax toggle-password fs-14"
+                                                [ngClass]="password[0] ? 'isax-eye' : 'isax-eye-slash'"
+                                                (click)="togglePassword(0)"
+                                                (keydown.enter)="togglePassword(0)"
+                                                tabindex="0"
+                                                ></span>
                                         </div>
                                         <div id="passwordStrength" class="strength-meter password-strength" [ngClass]="{'poor-active':strengthLevel === 'poor','avg-active':strengthLevel === 'weak','strong-active':strengthLevel === 'strong','heavy-active':strengthLevel === 'heavy'}" >
                                           <span id="poor" [ngClass]="{'active': strengthLevel === 'poor'||strengthLevel === 'weak'||strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
@@ -73,40 +269,60 @@
                                           <span id="strong" [ngClass]="{'active': strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
                                           <span id="heavy" [ngClass]="{'active': strengthLevel === 'heavy'}"></span>
                                         </div>
-                                       
+                                    </div>
+                                    <div id="passwordInfo" class="mt-2">
+                                      @if (passwordInfoMessage) {
+                                        <span class="d-flex align-items-center fs-15 fw-semibold" [style.color]="passwordInfoColor">
+                                          {{ passwordInfoMessage }}
+                                        </span>
+                                      }
+                                    </div>
+                                    @if (isFieldInvalid('password')) {
+                                      <div class="invalid-feedback d-block">
+                                        {{ getFieldError('password') }}
                                       </div>
-                                      <div id="passwordInfo" class="mt-2">
-                                        <span *ngIf="strengthLevel === 'poor'" class="d-flex align-items-center text-danger fs-15 fw-semibold">
-                                          <img src="assets/img/icon/angry.svg" class="me-2">Weak. Must contain at least 8 characters
-                                        </span>
-                                        <span *ngIf="strengthLevel === ('poor'&&'weak')" class="d-flex align-items-center text-warning fs-15 fw-semibold">
-                                          <img src="assets/img/icon/anguish.svg" class="me-2">Average. Must contain at least 1 letter or number
-                                        </span>
-                                        <span *ngIf="strengthLevel === ('poor'&&'weak'&&'strong')" class="d-flex align-items-center text-blueL fs-15 fw-semibold">
-                                          <img src="assets/img/icon/smile.svg" class="me-2">Almost. Must contain special symbol
-                                        </span>
-                                        <span *ngIf="strengthLevel === ('poor'&&'weak'&&'strong'&&'heavy')" class="d-flex align-items-center text-success fs-15 fw-semibold">
-                                          <img src="assets/img/icon/smile.svg" class="me-2">Awesome! You have a secure password.
-                                        </span>
-                                      </div>
+                                    }
                                 </div>
+
                                 <div class="mb-3 position-relative">
                                     <label class="form-label">Confirm Password <span class="text-danger"> *</span></label>
-                                    <div class="position-relative" id="passwordInput">
-                                        <input [type]="password[1] ? 'text' : 'password'" class="pass-inputs form-control form-control-lg">
+                                    <div class="position-relative" id="confirmPasswordInput">
+                                        <input 
+                                          [type]="password[1] ? 'text' : 'password'" 
+                                          class="pass-inputs form-control form-control-lg"
+                                          formControlName="confirmPassword"
+                                          [class.is-invalid]="isFieldInvalid('confirmPassword')"
+                                          placeholder="Confirm your password">
                                         <span tabindex="0" (click)="togglePassword(1)" (keydown.enter)="togglePassword(1)" class="isax toggle-passwords fs-14" [ngClass]="password[1] ? 'isax-eye' : 'isax-eye-slash'"></span>
                                     </div>
+                                    @if (isFieldInvalid('confirmPassword')) {
+                                      <div class="invalid-feedback d-block">
+                                        {{ getFieldError('confirmPassword') }}
+                                      </div>
+                                    }
                                 </div>
+
                                 <div class="d-flex align-items-center justify-content-between mb-4">
                                     <div class="remember-me d-flex align-items-center">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" required>
                                             <label class="form-check-label mb-0 d-inline-flex remember-me fs-14" for="flexCheckDefault">
                                                 I agree with <a href="javascript:void(0);" class="link-2 mx-2">Terms of Service</a> and <a href="javascript:void(0);" class="link-2 mx-2">Privacy Policy</a> 
                                             </label>
                                     </div>
                                 </div>
+
                                 <div class="d-grid">
-                                    <button class="btn btn-secondary btn-lg" type="submit">Sign Up <i class="isax isax-arrow-right-3 ms-1"></i></button>
+                                    <button 
+                                      class="btn btn-secondary btn-lg" 
+                                      type="submit"
+                                      [disabled]="isLoading || registerForm.invalid">
+                                      @if (isLoading) {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Creating account...
+                                      } @else {
+                                        Sign Up <i class="isax isax-arrow-right-3 ms-1"></i>
+                                      }
+                                    </button>
                                 </div>
                             </form>
 
@@ -120,10 +336,10 @@
                             </div>
 
                             <div class="fs-14 fw-normal d-flex align-items-center justify-content-center">
-                                Already you have an account?<a [routerLink]="routes.login" class="link-2 ms-1"> Login</a>
+                                Already have an account?<a [routerLink]="routes.login" class="link-2 ms-1"> Login</a>
                             </div>
 
-                            <!-- /Login -->
+                            <!-- /Register -->
 
                         </div>
                     </div>
@@ -131,4 +347,5 @@
             </div>
         </div>
     </div>
-  </div>
+</div>
+

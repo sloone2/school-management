@@ -22,6 +22,9 @@ export class routes {
   public static get instructorAnnouncements(): string {
     return this.instructor + 'instructor-announcements';
   }
+  public static get instructorManageGroups(): string {
+    return this.instructor + 'instructor-manage-groups';
+  }
   public static get instructorAssignment(): string {
     return this.instructor + 'instructor-assignment';
   }

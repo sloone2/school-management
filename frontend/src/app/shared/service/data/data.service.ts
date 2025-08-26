@@ -50,6 +50,7 @@ export class DataService {
         })
       );
   }
+
   public getInstructorQuizResult(): Observable<apiResultFormat> {
     return this.http.get<apiResultFormat>('assets/JSON/instructor-quiz-result.json').pipe(
         map((res: apiResultFormat) => {
@@ -221,7 +222,7 @@ export class DataService {
       content4: 'Courses.',
       paragraph: 'Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.',
     },
-    
+
   ];
 
 
@@ -581,7 +582,7 @@ export class DataService {
               showSubRoute: false,
               subMenus: [],
             },
-  
+
             {
               menuValue: "Payout",
              route: routes.instructor_payouts,
@@ -598,7 +599,7 @@ export class DataService {
               showSubRoute: false,
               subMenus: [],
             },
-  
+
             {
               menuValue: "Support Ticket",
               route: routes.instructorTickets,
@@ -611,7 +612,7 @@ export class DataService {
               menuValue: "Settings",
               route: routes.instructorSettings,
               page:'settings',
-              last:'instructor-settings', 
+              last:'instructor-settings',
               hasSubRoute: false,
               showSubRoute: false,
               subMenus: [],
@@ -675,7 +676,7 @@ export class DataService {
               showSubRoute: false,
               subMenus: [],
             },
-  
+
             {
               menuValue: "Reviews",
               route: routes.studentReviews,
@@ -692,7 +693,7 @@ export class DataService {
               showSubRoute: false,
               subMenus: [],
             },
-  
+
             {
               menuValue: "Order History",
               route: routes.studentOrderHistory,

@@ -10,8 +10,13 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserType } from '../../users/entities/user.entity';
-import { StaffType } from '../../users/entities/staff.entity';
 import { ParentRelationship } from '../../users/entities/parent.entity';
+
+// Restricted user types for public registration
+export enum PublicUserType {
+  STUDENT = 'student',
+  PARENT = 'parent',
+}
 
 export class RegisterDto {
   @ApiProperty({
@@ -45,19 +50,19 @@ export class RegisterDto {
   lastName: string;
 
   @ApiProperty({
-    enum: UserType,
-    example: UserType.STUDENT,
-    description: 'Type of user',
+    enum: PublicUserType,
+    example: PublicUserType.STUDENT,
+    description: 'Type of user (only STUDENT and PARENT allowed for public registration)',
   })
-  @IsEnum(UserType)
-  userType: UserType;
+  @IsEnum(PublicUserType)
+  userType: PublicUserType;
 
   // Student-specific fields
   @ApiPropertyOptional({
     example: 'STU001',
     description: 'Student ID (required for students)',
   })
-  @ValidateIf(o => o.userType === UserType.STUDENT)
+  @ValidateIf(o => o.userType === PublicUserType.STUDENT)
   @IsString()
   studentId?: string;
 
@@ -85,40 +90,6 @@ export class RegisterDto {
   @IsBoolean()
   canLoginDirectly?: boolean;
 
-  // Staff-specific fields
-  @ApiPropertyOptional({
-    example: 'EMP001',
-    description: 'Employee ID (required for staff)',
-  })
-  @ValidateIf(o => o.userType === UserType.STAFF)
-  @IsString()
-  employeeId?: string;
-
-  @ApiPropertyOptional({
-    enum: StaffType,
-    example: StaffType.INSTRUCTOR,
-    description: 'Type of staff (required for staff)',
-  })
-  @ValidateIf(o => o.userType === UserType.STAFF)
-  @IsEnum(StaffType)
-  staffType?: StaffType;
-
-  @ApiPropertyOptional({
-    example: 'Mathematics',
-    description: 'Department (for staff)',
-  })
-  @IsOptional()
-  @IsString()
-  department?: string;
-
-  @ApiPropertyOptional({
-    example: 'Senior Teacher',
-    description: 'Position (for staff)',
-  })
-  @IsOptional()
-  @IsString()
-  position?: string;
-
   // Parent-specific fields
   @ApiPropertyOptional({
     example: '+1234567890',
@@ -133,7 +104,7 @@ export class RegisterDto {
     example: ParentRelationship.FATHER,
     description: 'Relationship to student (for parents)',
   })
-  @ValidateIf(o => o.userType === UserType.PARENT)
+  @ValidateIf(o => o.userType === PublicUserType.PARENT)
   @IsEnum(ParentRelationship)
   relationship?: ParentRelationship;
 }

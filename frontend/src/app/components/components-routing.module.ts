@@ -22,6 +22,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'admin',
+        loadChildren: () =>
+          import('./admin/admin.module').then(
+            (m) => m.AdminModule
+          ),
+      },
+      {
         path: 'pages',
         loadChildren: () =>
           import('./pages/pages.module').then((m) => m.PagesModule),
@@ -36,17 +43,17 @@ const routes: Routes = [
         loadChildren: () =>
           import('./home-list/home/home.module').then((m) => m.HomeModule),
       },
-      { 
-        path: 'index-two', 
-        loadChildren: () => import('./home-list/home2/home2.module').then(m => m.Home2Module) 
+      {
+        path: 'index-two',
+        loadChildren: () => import('./home-list/home2/home2.module').then(m => m.Home2Module)
       },
-      { 
-        path: 'index-three', 
-        loadChildren: () => import('./home-list/home3/home3.module').then(m => m.Home3Module) 
+      {
+        path: 'index-three',
+        loadChildren: () => import('./home-list/home3/home3.module').then(m => m.Home3Module)
       },
-      { 
-        path: 'index-four', 
-        loadChildren: () => import('./home-list/home4/home4.module').then(m => m.Home4Module) 
+      {
+        path: 'index-four',
+        loadChildren: () => import('./home-list/home4/home4.module').then(m => m.Home4Module)
       },
       { path: 'index-five', loadChildren: () => import('./home-list/home5/home5.module').then(m => m.Home5Module) },
       { path: 'index-six', loadChildren: () => import('./home-list/home6/home6.module').then(m => m.Home6Module) },

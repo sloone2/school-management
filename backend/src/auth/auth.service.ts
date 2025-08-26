@@ -73,16 +73,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<AuthResponse> {
-    const { email, password, loginAsStudent } = loginDto;
+    const { email, password } = loginDto;
     
     const user = await this.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Handle parent logging in as student
-    if (loginAsStudent && user.userType === UserType.PARENT) {
-      return this.loginParentAsStudent(user, loginAsStudent);
     }
 
     // Handle student direct login
@@ -112,6 +107,16 @@ export class AuthService {
       throw new BadRequestException('User with this email already exists');
     }
 
+    // Convert PublicUserType to UserType
+    let actualUserType: UserType;
+    if (userType === 'student') {
+      actualUserType = UserType.STUDENT;
+    } else if (userType === 'parent') {
+      actualUserType = UserType.PARENT;
+    } else {
+      throw new BadRequestException('Invalid user type. Only STUDENT and PARENT are allowed for public registration.');
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -121,15 +126,15 @@ export class AuthService {
       password: hashedPassword,
       firstName: userData.firstName,
       lastName: userData.lastName,
-      userType,
-      role: this.getUserRoleFromType(userType),
+      userType: actualUserType,
+      role: this.getUserRoleFromType(actualUserType),
       emailVerified: false,
     });
 
     const savedUser = await this.userRepository.save(user);
 
     // Create specific user type record
-    await this.createUserTypeRecord(savedUser, userType, userData);
+    await this.createUserTypeRecord(savedUser, actualUserType, userData);
 
     // Assign default claims
     await this.claimsService.assignDefaultClaims(savedUser);
@@ -141,57 +146,6 @@ export class AuthService {
     });
 
     return this.generateAuthResponse(userWithClaims);
-  }
-
-  private async loginParentAsStudent(parent: User, studentId: string): Promise<AuthResponse> {
-    // Verify parent can manage this student
-    const parentRecord = await this.parentRepository.findOne({
-      where: { user: { id: parent.id } },
-      relations: ['children', 'children.user', 'children.user.claims', 'children.user.claims.claim'],
-    });
-
-    const student = parentRecord?.children.find(child => child.id === studentId);
-    if (!student) {
-      throw new UnauthorizedException('You are not authorized to access this student account');
-    }
-
-    // Create a hybrid response with parent identity but student context
-    const studentUser = student.user;
-    const parentClaims = parent.claims.map(uc => uc.claim.name);
-    const studentClaims = studentUser.claims.map(uc => uc.claim.name);
-    
-    // Combine claims (parent gets their claims + student's claims)
-    const combinedClaims = [...new Set([...parentClaims, ...studentClaims])];
-    const combinedRoutes = [...new Set([
-      ...parent.getFrontendRoutes(),
-      ...studentUser.getFrontendRoutes(),
-    ])];
-
-    const payload: JwtPayload = {
-      sub: parent.id, // Keep parent as the authenticated user
-      email: parent.email,
-      userType: UserType.PARENT,
-      role: UserRole.PARENT,
-      claims: combinedClaims,
-      frontendRoutes: combinedRoutes,
-    };
-
-    const token = this.jwtService.sign(payload);
-
-    return {
-      access_token: token,
-      user: {
-        id: parent.id,
-        email: parent.email,
-        firstName: parent.firstName,
-        lastName: parent.lastName,
-        userType: UserType.PARENT,
-        role: UserRole.PARENT,
-        claims: combinedClaims,
-        frontendRoutes: combinedRoutes,
-        canManageStudents: parentRecord.children.map(child => child.id),
-      },
-    };
   }
 
   private async generateAuthResponse(user: User): Promise<AuthResponse> {

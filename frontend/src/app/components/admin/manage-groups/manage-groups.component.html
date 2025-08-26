@@ -1,0 +1,306 @@
+<div class="page-title d-flex align-items-center justify-content-between">
+  <h4>Manage Groups</h4>
+  <button type="button" class="btn btn-primary" (click)="openAddModal()">
+    <i class="fa fa-plus me-2"></i>Add Group
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h5 class="card-title">Groups List</h5>
+    <div class="d-flex align-items-center gap-2">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa fa-search"></i></span>
+      </div>
+      <button type="button" class="btn btn-outline-secondary" (click)="onRefresh()" title="Refresh">
+        <i class="fa fa-refresh" [class.fa-spin]="isLoadingData"></i>
+      </button>
+      <button type="button" class="btn btn-outline-success" (click)="onExportGroups()" title="Export">
+        <i class="fa fa-download"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingData" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading groups...</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!isLoadingData">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Created Date</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let group of tableData; let i = index">
+          <td>{{ group.sNo }}</td>
+          <td>
+            <strong>{{ group.title }}</strong>
+          </td>
+          <td>
+            <span [title]="group.description">
+              {{ group.description | slice:0:50 }}{{ group.description.length > 50 ? '...' : '' }}
+            </span>
+          </td>
+          <td>
+            <button type="button"
+                    class="btn btn-sm badge border-0"
+                    [class]="group.isActive ? 'bg-success' : 'bg-danger'"
+                    (click)="toggleGroupStatus(group)"
+                    [title]="'Click to ' + (group.isActive ? 'deactivate' : 'activate')">
+              {{ group.isActive ? 'Active' : 'Inactive' }}
+            </button>
+          </td>
+          <td>{{ group.createdAt || 'N/A' }}</td>
+          <td>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-outline-primary"
+                      (click)="openViewModal(group)" title="View">
+                <i class="fa fa-eye"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-warning"
+                      (click)="openEditModal(group)" title="Edit">
+                <i class="fa fa-edit"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-info"
+                      (click)="duplicateGroup(group)" title="Duplicate">
+                <i class="fa fa-copy"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger"
+                      (click)="deleteGroup(group)"
+                      [disabled]="isDeleting"
+                      title="Delete">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!hasData && !isLoadingData">
+          <td colspan="6" class="text-center py-4">
+            <div class="text-muted">
+              <i class="fa fa-inbox fa-2x mb-2"></i>
+              <p>No groups found</p>
+              <button type="button" class="btn btn-primary btn-sm" (click)="openAddModal()">
+                <i class="fa fa-plus me-1"></i>Create First Group
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex align-items-center justify-content-between mt-3" *ngIf="totalData > 0 && !isLoadingData">
+      <div>
+        <span class="text-muted">Showing {{ skip + 1 }} to {{ Math.min(skip + pageSize, totalData) }} of {{ totalData }} entries</span>
+      </div>
+      <app-custom-pagination></app-custom-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- Add Group Modal (Angular Way) -->
+<div class="modal fade show"
+     [style.display]="showAddModal ? 'block' : 'none'"
+     [class.show]="showAddModal"
+     tabindex="-1"
+     aria-labelledby="addGroupLabel"
+     [attr.aria-hidden]="!showAddModal">
+  <div class="modal-dialog">
+    <div class="modal-content" #addGroupModal>
+      <div class="modal-header">
+        <h5 class="modal-title" id="addGroupLabel">Add New Group</h5>
+        <button type="button" class="btn-close" (click)="closeAddModal()" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="onFormSubmit(false)" #addForm="ngForm">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="addTitle" class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text"
+                   class="form-control"
+                   [class.is-invalid]="isFieldInvalid('title')"
+                   id="addTitle"
+                   [(ngModel)]="groupForm.title"
+                   name="title"
+                   required
+                   placeholder="Enter group title">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('title')">
+              {{ getFieldError('title') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="addDescription" class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control"
+                      [class.is-invalid]="isFieldInvalid('description')"
+                      id="addDescription"
+                      rows="3"
+                      [(ngModel)]="groupForm.description"
+                      name="description"
+                      required
+                      placeholder="Enter group description"></textarea>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+              {{ getFieldError('description') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="addActive"
+                     [(ngModel)]="groupForm.isActive" name="isActive">
+              <label class="form-check-label" for="addActive">
+                Active
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+          <button type="submit"
+                  class="btn btn-primary"
+                  [disabled]="!canSubmit">
+            <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-2"></span>
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop for Add Modal -->
+<div class="modal-backdrop fade show" *ngIf="showAddModal" (click)="closeAddModal()"></div>
+
+<!-- Edit Group Modal (Angular Way) -->
+<div class="modal fade show"
+     [style.display]="showEditModal ? 'block' : 'none'"
+     [class.show]="showEditModal"
+     tabindex="-1"
+     aria-labelledby="editGroupLabel"
+     [attr.aria-hidden]="!showEditModal">
+  <div class="modal-dialog">
+    <div class="modal-content" #editGroupModal>
+      <div class="modal-header">
+        <h5 class="modal-title" id="editGroupLabel">Edit Group</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="onFormSubmit(true)" #editForm="ngForm">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="editTitle" class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text"
+                   class="form-control"
+                   [class.is-invalid]="isFieldInvalid('title')"
+                   id="editTitle"
+                   [(ngModel)]="groupForm.title"
+                   name="title"
+                   required
+                   placeholder="Enter group title">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('title')">
+              {{ getFieldError('title') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control"
+                      [class.is-invalid]="isFieldInvalid('description')"
+                      id="editDescription"
+                      rows="3"
+                      [(ngModel)]="groupForm.description"
+                      name="description"
+                      required
+                      placeholder="Enter group description"></textarea>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+              {{ getFieldError('description') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="editActive"
+                     [(ngModel)]="groupForm.isActive" name="isActive">
+              <label class="form-check-label" for="editActive">
+                Active
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button type="submit"
+                  class="btn btn-primary"
+                  [disabled]="!canSubmit">
+            <span *ngIf="isUpdating" class="spinner-border spinner-border-sm me-2"></span>
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop for Edit Modal -->
+<div class="modal-backdrop fade show" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+
+<!-- View Group Modal (Angular Way) -->
+<div class="modal fade show"
+     [style.display]="showViewModal ? 'block' : 'none'"
+     [class.show]="showViewModal"
+     tabindex="-1"
+     aria-labelledby="viewGroupLabel"
+     [attr.aria-hidden]="!showViewModal">
+  <div class="modal-dialog">
+    <div class="modal-content" #viewGroupModal>
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewGroupLabel">Group Details</h5>
+        <button type="button" class="btn-close" (click)="closeViewModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedGroup">
+        <div class="row mb-3">
+          <div class="col-sm-4"><strong>Title:</strong></div>
+          <div class="col-sm-8">{{ selectedGroup.title }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4"><strong>Description:</strong></div>
+          <div class="col-sm-8">{{ selectedGroup.description }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4"><strong>Status:</strong></div>
+          <div class="col-sm-8">
+            <span class="badge" [class]="selectedGroup.isActive ? 'bg-success' : 'bg-danger'">
+              {{ selectedGroup.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4"><strong>Created Date:</strong></div>
+          <div class="col-sm-8">{{ selectedGroup.createdAt || 'N/A' }}</div>
+        </div>
+        <div class="row mb-3" *ngIf="selectedGroup.studentsCount !== undefined">
+          <div class="col-sm-4"><strong>Students:</strong></div>
+          <div class="col-sm-8">{{ selectedGroup.studentsCount || 0 }} students</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-warning" (click)="editFromView()">
+          <i class="fa fa-edit me-1"></i>Edit
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="closeViewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop for View Modal -->
+<div class="modal-backdrop fade show" *ngIf="showViewModal" (click)="closeViewModal()"></div>
+
